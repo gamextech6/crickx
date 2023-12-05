@@ -11,6 +11,7 @@ const {
   updateUserProfile,
   getUserProfile,
   getUserBalance,
+  userAddPanAadhar,
   getUserByPhoneNumber,
   getUserReferralCode,
   registerWithReferral,
@@ -31,6 +32,7 @@ router.post("/getalluser", getAllUsers);
 router.post("/block-user", blockUser);
 router.post("/unblock-user", unblockUser);
 router.put("/update-profile", updateUserProfile);
+router.post("/uploadpanaadhar", upload, userAddPanAadhar);
 router.post("/getprofile", getUserProfile);
 router.post("/getuser-balance", getUserBalance);
 router.post("/getuser", getUserByPhoneNumber)

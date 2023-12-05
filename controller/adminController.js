@@ -2,6 +2,7 @@ const AdminModel = require("../models/adminModel");
 const UserModel = require("../models/userModel");
 const AdminAgentModel = require("../models/adminAgentModel");
 const UserTransactionsModel = require("../models/userTransactionsModel");
+const PoolContestModel = require("../models/poolContestModel")
 const AWS = require("aws-sdk");
 // const { Storage } = require('@google-cloud/storage');
 // const storage = new Storage();
@@ -86,7 +87,7 @@ exports.createAdminAgent = async (req, res) => {
 
     return res
       .status(200)
-      .json({ success: true, message: "Admin agent created successfully." });
+      .json({ success: true,newAdminAgent: newAdminAgent, message: "Admin agent created successfully." });
   } catch (error) {
     console.error("Error creating admin agent:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -183,81 +184,6 @@ exports.unblockAdminAgent = async (req, res) => {
   }
 };
 
-exports.addAgent = async (req, res) => {
-  try {
-    const { userName } = req.body;
-    // Check if the user exists
-    const user = await UserModel.findOne({ userName });
-    if (!user) {
-      return res.status(404).json({ error: "User not found." });
-    }
-    // Update the user's role to 'agent'
-    user.role = "agent";
-    await user.save();
-    res
-      .status(200)
-      .json({ success: true, message: "User role updated to agent." });
-  } catch (error) {
-    console.error("Error updating user role:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-exports.getAgents = async (req, res) => {
-  try {
-    // Find all users with role 'agent'
-    const agents = await UserModel.find({ role: "agent" });
-    res.status(200).json({ success: true, data: agents });
-  } catch (error) {
-    console.error("Error fetching agents:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-exports.searchAgentByUsername = async (req, res) => {
-  try {
-    const { userName } = req.params;
-    // Find the user with the given username and role 'agent'
-    const agent = await UserModel.findOne({ userName, role: "agent" });
-    if (!agent) {
-      return res.status(404).json({ error: "Agent not found." });
-    }
-    res.status(200).send({
-      sucess: true,
-      message: "Agent got successfully",
-      data: agent,
-    });
-  } catch (error) {
-    console.error("Error searching for agent:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-exports.blockAgent = async (req, res) => {
-  try {
-    const { userName } = req.params;
-    // Find the agent by username and update the 'blocked' field to true
-    const updatedAgent = await UserModel.findOneAndUpdate(
-      { userName, role: "agent" },
-      { $set: { agentBlocked: true } },
-      { new: true }
-    );
-    if (!updatedAgent) {
-      return res.status(404).json({ error: "Agent not found." });
-    }
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Agent blocked successfully.",
-        agent: updatedAgent,
-      });
-  } catch (error) {
-    console.error("Error blocking agent:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
 exports.deleteAdminAgent = async (req, res) => {
   try {
     const { userName } = req.params;
@@ -270,31 +196,6 @@ exports.deleteAdminAgent = async (req, res) => {
       });
   } catch (error) {
     console.error("Error blocking agent:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-exports.unblockAgent = async (req, res) => {
-  try {
-    const { userName } = req.params;
-    // Find the agent by username and update the 'blocked' field to false
-    const updatedAgent = await UserModel.findOneAndUpdate(
-      { userName, role: "agent" },
-      { $set: { agentBlocked: false } },
-      { new: true }
-    );
-    if (!updatedAgent) {
-      return res.status(404).json({ error: "Agent not found." });
-    }
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Agent unblocked successfully.",
-        agent: updatedAgent,
-      });
-  } catch (error) {
-    console.error("Error unblocking agent:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -327,230 +228,24 @@ exports.getAdminAgentCount = async (req, res) => {
   }
 };
 
-exports.getAgentCount = async (req, res) => {
+exports.poolContest = async (req, res) => {
   try {
-    const totalCount = await UserModel.countDocuments({ role: "agent" });
-    res.status(200).send({
-      sucess: true,
-      totalCount: totalCount,
-    });
-    // res.status(200).json({ success: true, totalCount });
-  } catch (error) {
-    console.error("Error getting user count:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-exports.adminAccountAdd = async (req, res) => {
-  try {
-    const {
-      bankName,
-      branchName,
-      accountHolderName,
-      bankAccountNumber,
-      ifscCode,
-      upiID
-    } = req.body;
-    const fileName = `accountQR/${bankAccountNumber}`;
-    const params = {
-      Bucket: process.env.QR_BUCKET,
-      Key: fileName,
-      Body: req.file.buffer,
-    };
-
-    const s3UploadResponse = await s3.upload(params).promise();
-    const qr = s3UploadResponse.Location;
-
-    const bankDetails = new AdminBankModel({
-      bankName: bankName,
-      branchName: branchName,
-      accountHolderName: accountHolderName,
-      bankAccountNumber: bankAccountNumber,
-      ifscCode: ifscCode,
-      qr: qr,
-      upiID: upiID
-    });
-    // Save user to the database
-    await bankDetails.save();
-    res.status(200).send({
-      sucess: true,
-      message: "Account Details submitted successfully.",
-    });
-  } catch (error) {
-    console.error("Error on subbmitting :", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-exports.adminAccountDelete = async (req, res) => {
-  try {
-    const { bankAccountNumber } = req.params;
-
-    const fileName = `accountQR/${bankAccountNumber}`;
-    const deleteParams = {
-      Bucket: process.env.QR_BUCKET,
-      Key: fileName,
-    };
-
-    s3.deleteObject(deleteParams, (err, data) => {
-      if (err) {
-        console.error("Error deleting object:", err);
-      } else {
-        console.log("Object deleted successfully:", data);
-      }
-    });
-    await AdminBankModel.findOneAndRemove({ bankAccountNumber });
-    res
+    const { match_id, price_pool_percent, entry_fee, totel_spots, winning_spots } = req.body;
+    const price_pool = totel_spots*entry_fee*price_pool_percent/100;
+    const newPool = new PoolContestModel({ 
+      match_id, 
+      price_pool_percent, 
+      price_pool,
+      entry_fee, 
+      totel_spots, 
+      winning_spots,
+     });
+    await newPool.save();
+    return res
       .status(200)
-      .json({
-        success: true,
-        message: "Account Details Deleted Successfully.",
-      });
+      .json({ success: true, newPool: newPool ,message: "Pool Contest created successfully." });
   } catch (error) {
-    console.error("Error Account Details submitting.:", error);
+    console.error("Error creating admin agent:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-};
-
-exports.getAdminAccount = async (req, res) => {
-  try {
-    const allAccount = await AdminBankModel.find();
-    res.status(200).json({ success: true, data: allAccount });
-  } catch (error) {
-    console.error("Error fetching accounts :", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-exports.addBalanceToUser = async (req, res) => {
-  try {
-    const { userName, balance } = req.body;
-    const user = await UserModel.findOne({ userName });
-    if(!user){
-      return res.status(201).json({ success: false, massage: "User Not Find. Please enter correct username."});
-    }
-    user.balance += balance;
-    await user.save();
-    const transaction = new UserTransactionsModel({
-      userName : user.userName,
-      phoneNumber: user.phoneNumber,
-      balance: user.balance,
-      amount: balance,
-      deposit: true,
-      withdrawl: false,
-      formattedDate: new Date().toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      }),
-    })
-    await transaction.save();
-    res.status(200).send({
-      sucess: true,
-      message: "Amount Added successfully.",
-      data: transaction
-    });
-  } catch (error) {
-    console.error("Error fetching accounts :", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-exports.reduceBalanceToUser = async (req, res) => {
-  try {
-    
-    const { userName, balance} = req.body;
-    const user = await UserModel.findOne({ userName });
-    if(!user){
-      return res.status(201).json({ success: false, massage: "User Not Find. Please enter correct username."});
-    }
-    user.balance -= balance;
-    await user.save();
-    const transaction = new UserTransactionsModel({
-      userName : user.userName,
-      phoneNumber: user.phoneNumber,
-      balance: user.balance,
-      amount: balance,
-      deposit: false,
-      withdrawl: true,
-      formattedDate: new Date().toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      }),
-    })
-    await transaction.save();
-    res.status(200).send({
-      sucess: true,
-      message: "Amount Reduced.",
-      data: transaction,
-    });
-  } catch (error) {
-    console.error("Error fetching accounts :", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-exports.activeAccount = async (req, res) => {
-  try {
-    const { bankAccountNumber } = req.body;
-    const updatedAccount = await AdminBankModel.findOneAndUpdate({ bankAccountNumber });
-    if (!updatedAccount) {
-      return res.status(404).json({ error: "Accouont not found." });
-    }
-    updatedAccount.active = true;
-    await updatedAccount.save();
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Account Activeted successfully."
-      });
-  } catch (error) {
-    console.error("Error blocking agent:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-exports.deactiveAccount = async (req, res) => {
-  try {
-    const { bankAccountNumber } = req.body;
-    const updatedAccount = await AdminBankModel.findOneAndUpdate({ bankAccountNumber });
-    if (!updatedAccount) {
-      return res.status(404).json({ error: "Accouont not found." });
-    }
-    updatedAccount.active = false;
-    await updatedAccount.save();
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Account Deactiveted successfully."
-      });
-  } catch (error) {
-    console.error("Error blocking agent:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-exports.getAdminAccountDetail = async (req, res) => {
-  try {
-    const { bankAccountNumber } = req.params;
-    const accountDetails = await AdminBankModel.find({ bankAccountNumber });
-    res.status(200).json({ success: true, data: accountDetails });
-  } catch (error) {
-    console.error("Error In Fetching Account Detail :", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-exports.getAdminAccountDetail = async (req, res) => {
-  try {
-    const { bankAccountNumber } = req.params;
-    const accountDetails = await AdminBankModel.find({ bankAccountNumber });
-    res.status(200).json({ success: true, data: accountDetails });
-  } catch (error) {
-    console.error("Error In Fetching Account Detail :", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
+}

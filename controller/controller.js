@@ -131,15 +131,14 @@ exports.blockUser = async (req, res) => {
     // Update the user's blocked status
     const user = await UserModel.findOneAndUpdate(
       { phoneNumber },
-      { $set: { blocked } },
-      { new: true }
+      { $set: { blocked: true } },
     );
 
     if (!user) {
       return res.status(404).json({ error: "User not found." });
     }
 
-    res.status(200).json({ success: true, blocked: user.blocked });
+    res.status(200).json({ success: true, blocked: user, message: "User Blocked Successfully" });
   } catch (error) {
     console.error("Error blocking/unblocking user:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -154,14 +153,13 @@ exports.unblockUser = async (req, res) => {
     const user = await UserModel.findOneAndUpdate(
       { phoneNumber },
       { $set: { blocked: false } },
-      { new: true }
     );
 
     if (!user) {
       return res.status(404).json({ error: "User not found." });
     }
 
-    res.status(200).json({ success: true, unblocked: user.blocked });
+    res.status(200).json({ success: true, unblockedUser: user, message: "User Unblocked Successfully" });
   } catch (error) {
     console.error("Error blocking/unblocking user:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -194,6 +192,50 @@ exports.updateUserProfile = async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating user profile:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.userAddPanAadhar = async (req, res) => {
+  try {
+    const phoneNumber = req.body.phoneNumber;
+
+    const blockedUser = await UserModel.findOne({ phoneNumber, blocked: true });
+    if (blockedUser) {
+      return res
+        .status(403)
+        .json({
+          error:
+            "User is blocked. Cannot able to upload bank details. Please connect to support team.",
+        });
+    }
+
+    const panName = `pans/${phoneNumber}`;
+    const aadharName = `aadhars/${phoneNumber}`;
+    const panParams = {
+      Bucket: process.env.PAN_BUCKET,
+      Key: panName,
+      Body: req.files["aadhar"][0].buffer,
+    };
+    const s3UploadPanResponse = await s3.upload(panParams).promise();
+
+    const aadharParams = {
+      Bucket: process.env.AADHAR_BUCKET,
+      Key: aadharName,
+      Body: req.files["pan"][0].buffer,
+    };
+    const s3UploadAadharResponse = await s3.upload(aadharParams).promise();
+
+    user.pan = s3UploadPanResponse.Location;
+    user.aadhar = s3UploadAadharResponse.Location;
+    // Save user to the database
+    await user.save();
+    res.status(200).send({
+      sucess: true,
+      message: "User account Details submitted successfully.",
+    });
+  } catch (error) {
+    console.error("Error on subbmitting :", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
