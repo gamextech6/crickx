@@ -2,7 +2,7 @@ const AdminModel = require("../models/adminModel");
 const UserModel = require("../models/userModel");
 const AdminAgentModel = require("../models/adminAgentModel");
 const UserTransactionsModel = require("../models/userTransactionsModel");
-const PoolContestModel = require("../models/poolContestModel")
+const PoolContestModel = require("../models/poolContestModel");
 const AWS = require("aws-sdk");
 // const { Storage } = require('@google-cloud/storage');
 // const storage = new Storage();
@@ -243,7 +243,59 @@ exports.poolContest = async (req, res) => {
     await newPool.save();
     return res
       .status(200)
-      .json({ success: true, newPool: newPool ,message: "Pool Contest created successfully." });
+      .json({ success: true, newPool: newPool ,message: "Pool Contest Created Successfully." });
+  } catch (error) {
+    console.error("Error creating admin agent:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+exports.getAllPoolContest = async (req, res) => {
+  try {
+    const { match_id } = req.body
+    const pool = await PoolContestModel.find({ match_id });
+    return res
+      .status(200)
+      .json({ success: true, Pool: pool ,message: "All Pool Contest of This match." });
+  } catch (error) {
+    console.error("Error creating admin agent:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+exports.deletePoolContest = async (req, res) => {
+  try {
+    const { _id } = req.body
+    const pool = await PoolContestModel.findByIdAndDelete({ _id });
+    return res
+      .status(200)
+      .json({ success: true, Pool: pool ,message: "Pool Contest Deleted Successfully." });
+  } catch (error) {
+    console.error("Error creating admin agent:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+exports.editPoolContest = async (req, res) => {
+  try {
+    const { _id, price_pool_percent, entry_fee, total_spots, winning_spots } = req.body;
+
+    const pool = await PoolContestModel.findByIdAndUpdate(
+      _id,
+      {
+        price_pool_percent,
+        entry_fee,
+        total_spots,
+        winning_spots,
+      },
+      { new: true }
+    );
+    if (!pool) {
+      return res.status(404).json({ error: 'Pool not found' });
+    }
+    return res
+      .status(200)
+      .json({ success: true, Pool: pool ,message: "Pool Contest Deleted Successfully." });
   } catch (error) {
     console.error("Error creating admin agent:", error);
     res.status(500).json({ error: "Internal server error" });

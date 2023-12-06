@@ -2,6 +2,7 @@ const UserModel = require("../models/userModel");
 const AdminModel = require("../models/adminModel");
 const AdminBankModel = require("../models/adminBankModel");
 const UserTransactionsModel = require("../models/userTransactionsModel");
+const PoolContestModel = require("../models/poolContestModel");
 const DialCodeModel = require("../models/dialCodeModel")
 const { createJwtToken } = require("../util/tokenUtil");
 const requestIp = require("request-ip");
@@ -401,3 +402,16 @@ exports.dialCode = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+exports.getAllPoolContest = async (req, res) => {
+  try {
+    const { match_id } = req.body
+    const pool = await PoolContestModel.find({ match_id });
+    return res
+      .status(200)
+      .json({ success: true, Pool: pool ,message: "All Pool Contest of This match." });
+  } catch (error) {
+    console.error("Error creating admin agent:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
