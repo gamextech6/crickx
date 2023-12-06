@@ -24,6 +24,10 @@ const poolContestSchema = new mongoose.Schema({
         type: Number,
         require: true,
     },
+    winning_spots_precent: {
+        type: Number,
+        require: true,
+    },
     left_spots: {
         type: Number
     },

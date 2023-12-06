@@ -230,14 +230,16 @@ exports.getAdminAgentCount = async (req, res) => {
 
 exports.poolContest = async (req, res) => {
   try {
-    const { match_id, price_pool_percent, entry_fee, total_spots, winning_spots } = req.body;
+    const { match_id, price_pool_percent, entry_fee, total_spots, winning_spots_precent } = req.body;
     const price_pool = total_spots*entry_fee*price_pool_percent/100;
+    const winning_spots = total_spots*winning_spots_precent/100
     const newPool = new PoolContestModel({ 
       match_id, 
       price_pool_percent, 
       price_pool,
       entry_fee, 
       total_spots, 
+      winning_spots_precent,
       winning_spots,
      });
     await newPool.save();
@@ -278,8 +280,9 @@ exports.deletePoolContest = async (req, res) => {
 
 exports.editPoolContest = async (req, res) => {
   try {
-    const { _id, price_pool_percent, entry_fee, total_spots, winning_spots } = req.body;
+    const { _id, price_pool_percent, entry_fee, total_spots, winning_spots_precent } = req.body;
     const price_pool = total_spots*entry_fee*price_pool_percent/100;
+    const winning_spots = total_spots*winning_spots_precent/100
     const pool = await PoolContestModel.findByIdAndUpdate(
       _id,
       {
@@ -287,6 +290,7 @@ exports.editPoolContest = async (req, res) => {
         price_pool,
         entry_fee,
         total_spots,
+        winning_spots_precent,
         winning_spots,
       },
       { new: true }
