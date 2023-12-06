@@ -16,7 +16,7 @@ const poolContestSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    totel_spots: {
+    total_spots: {
         type: Number,
         require: true,
     },
