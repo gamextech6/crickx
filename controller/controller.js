@@ -3,7 +3,8 @@ const AdminModel = require("../models/adminModel");
 const AdminBankModel = require("../models/adminBankModel");
 const UserTransactionsModel = require("../models/userTransactionsModel");
 const PoolContestModel = require("../models/poolContestModel");
-const DialCodeModel = require("../models/dialCodeModel")
+const DialCodeModel = require("../models/dialCodeModel");
+const TeamModel = require("../models/teamModel")
 const { createJwtToken } = require("../util/tokenUtil");
 const requestIp = require("request-ip");
 const twilio = require("twilio");
@@ -415,3 +416,116 @@ exports.getAllPoolContest = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
+exports.team = async (req, res) => {
+  try {
+    const { match_id,pid, entry_fee, total_spots, winning_spots_precent } = req.body;
+    const price_pool = total_spots*entry_fee*price_pool_percent/100;
+    const winning_spots = total_spots*winning_spots_precent/100
+    const newPool = new TeamModel({ 
+      match_id, 
+      price_pool_percent, 
+      "player1.pid" : pid,
+      entry_fee, 
+      total_spots, 
+      winning_spots_precent,
+      winning_spots,
+     });
+    await newPool.save();
+    return res
+      .status(200)
+      .json({ success: true, newPool: newPool ,message: "Pool Contest Created Successfully." });
+  } catch (error) {
+    console.error("Error creating admin agent:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+exports.updatePlayer = async (req, res) => {
+  try {
+    const { pid, fantasy_Point, c } = req.body;
+
+    // Find the team where the player with the specified pid exists
+    const team = await TeamModel.findOne({
+      $or: [
+        { 'player1.pid': pid },
+        { 'player2.pid': pid },
+        { 'player3.pid': pid },
+        { 'player4.pid': pid },
+        { 'player5.pid': pid },
+        { 'player6.pid': pid },
+        { 'player7.pid': pid },
+        { 'player8.pid': pid },
+        { 'player9.pid': pid },
+        { 'player10.pid': pid },
+        { 'player11.pid': pid },
+      ],
+    });
+
+    if (!team) {
+      return res.status(404).json({ error: 'Player not found in any team' });
+    }
+
+    ['player1', 'player2', 'player3', 'player4', 'player5', 'player6', 'player7', 'player8', 'player9', 'player10', 'player11'].forEach(
+      (playerField) => {
+        const player = team[playerField];
+        if (player && player.pid === pid) {
+          player.fantasy_Point = fantasy_Point;
+          player.c = c;
+        }
+      }
+    );
+
+    await team.save();
+
+    res.json({ message: 'Player updated successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+exports.createOrUpdateTeam = async (req, res) => {
+  try {
+    const { match_id, contest_id, players } = req.body;
+
+    // Validate if the required fields are present
+    if (!match_id || !contest_id || !players || players.length !== 11) {
+      return res.status(400).json({ error: 'Invalid request body' });
+    }
+
+    // Construct the team object based on the provided player data
+    const teamData = {
+      match_id,
+      contest_id,
+    };
+
+    for (let i = 1; i <= 11; i++) {
+      const playerKey = `player${i}`;
+      const playerInfo = players[i - 1];
+
+      // Validate if the required fields are present for each player
+      if (!playerInfo || !playerInfo.pid || !playerInfo.fantasy_Point) {
+        return res.status(400).json({ error: `Invalid data for ${playerKey}` });
+      }
+
+      teamData[playerKey] = {
+        pid: playerInfo.pid,
+        fantasy_Point: playerInfo.fantasy_Point,
+        c: Boolean(playerInfo.c),
+      };
+    }
+
+    // Find and update the team if it already exists, otherwise create a new team
+    const filter = { match_id, contest_id };
+    const options = { upsert: true, new: true, setDefaultsOnInsert: true };
+
+    const updatedTeam = await TeamModel.findOneAndUpdate(filter, teamData, options);
+
+    res.json(updatedTeam);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+

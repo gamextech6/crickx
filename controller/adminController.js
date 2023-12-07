@@ -303,6 +303,6 @@ exports.editPoolContest = async (req, res) => {
       .json({ success: true, Pool: pool ,message: "Pool Contest Deleted Successfully." });
   } catch (error) {
     console.error("Error creating admin agent:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({status: false, error: "Internal server error" });
   }
 }
