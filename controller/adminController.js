@@ -3,6 +3,7 @@ const UserModel = require("../models/userModel");
 const AdminAgentModel = require("../models/adminAgentModel");
 const UserTransactionsModel = require("../models/userTransactionsModel");
 const PoolContestModel = require("../models/poolContestModel");
+const RankPriceModel = require('../models/rankPricemodel')
 const AWS = require("aws-sdk");
 // const { Storage } = require('@google-cloud/storage');
 // const storage = new Storage();
@@ -50,7 +51,7 @@ exports.adminLogin = async (req, res) => {
     if (!admin) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
-    res.status(200).send({
+    return res.status(200).send({
       sucess: true,
       message: "Login successful",
     });
@@ -87,7 +88,7 @@ exports.createAdminAgent = async (req, res) => {
 
     return res
       .status(200)
-      .json({ success: true,newAdminAgent: newAdminAgent, message: "Admin agent created successfully." });
+      .json({ success: true, message: "Admin agent created successfully.", data: newAdminAgent});
   } catch (error) {
     console.error("Error creating admin agent:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -99,7 +100,7 @@ exports.getAllAdminAgents = async (req, res) => {
     // Find all admin agents
     const adminAgents = await AdminAgentModel.find();
 
-    res.status(200).json({ success: true, data: adminAgents });
+    res.status(200).json({ success: true,message: "All Admin agent", data: adminAgents });
   } catch (error) {
     console.error("Error getting all admin agents:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -108,7 +109,7 @@ exports.getAllAdminAgents = async (req, res) => {
 
 exports.getAdminAgentDetails = async (req, res) => {
   try {
-    const { userName } = req.params;
+    const { userName } = req.body;
 
     // Find the admin agent by username
     const adminAgent = await AdminAgentModel.findOne({ userName });
@@ -132,7 +133,7 @@ exports.getAdminAgentDetails = async (req, res) => {
 
 exports.blockAdminAgent = async (req, res) => {
   try {
-    const { userName } = req.params;
+    const { userName } = req.body;
 
     // Find the admin agent by username
     const adminAgent = await AdminAgentModel.findOne({ userName });
@@ -150,7 +151,7 @@ exports.blockAdminAgent = async (req, res) => {
 
     res
       .status(200)
-      .json({ success: true, message: "Admin agent blocked successfully." });
+      .json({ success: true, message: "Admin agent blocked successfully.", data: adminAgent });
   } catch (error) {
     console.error("Error blocking admin agent:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -159,7 +160,7 @@ exports.blockAdminAgent = async (req, res) => {
 
 exports.unblockAdminAgent = async (req, res) => {
   try {
-    const { userName } = req.params;
+    const { userName } = req.body;
 
     // Find the admin agent by username
     const adminAgent = await AdminAgentModel.findOne({ userName });
@@ -177,7 +178,7 @@ exports.unblockAdminAgent = async (req, res) => {
 
     res
       .status(200)
-      .json({ success: true, message: "Admin agent unblocked successfully." });
+      .json({ success: true, message: "Admin agent unblocked successfully.", data:adminAgent });
   } catch (error) {
     console.error("Error unblocking admin agent:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -186,7 +187,7 @@ exports.unblockAdminAgent = async (req, res) => {
 
 exports.deleteAdminAgent = async (req, res) => {
   try {
-    const { userName } = req.params;
+    const { userName } = req.body;
     await AdminAgentModel.findOneAndRemove({ userName });
     res
       .status(200)
@@ -203,11 +204,8 @@ exports.deleteAdminAgent = async (req, res) => {
 exports.getUserCount = async (req, res) => {
   try {
     const totalCount = await UserModel.countDocuments();
-    res.status(200).send({
-      sucess: true,
-      totalCount: totalCount,
-    });
-    // res.status(200).json({ success: true, totalCount });
+    const activeUser = await UserModel.countDocuments({isActive: true});
+    return res.status(200).json({ success: true, message: "all user", data1: totalCount, data2: activeUser });
   } catch (error) {
     console.error("Error getting user count:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -219,7 +217,8 @@ exports.getAdminAgentCount = async (req, res) => {
     const totalCount = await AdminAgentModel.countDocuments();
     res.status(200).send({
       sucess: true,
-      totalCount: totalCount,
+      message: "Today Admin Agent Count",
+      data: totalCount,
     });
     // res.status(200).json({ success: true, totalCount });
   } catch (error) {
@@ -245,7 +244,7 @@ exports.poolContest = async (req, res) => {
     await newPool.save();
     return res
       .status(200)
-      .json({ success: true, newPool: newPool ,message: "Pool Contest Created Successfully." });
+      .json({ success: true, message: "Pool Contest Created Successfully.", data: newPool  });
   } catch (error) {
     console.error("Error creating admin agent:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -258,7 +257,7 @@ exports.getAllPoolContest = async (req, res) => {
     const pool = await PoolContestModel.find({ match_id });
     return res
       .status(200)
-      .json({ success: true, Pool: pool ,message: "All Pool Contest of This match." });
+      .json({ success: true, message: "All Pool Contest of This match.", data: pool });
   } catch (error) {
     console.error("Error creating admin agent:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -271,7 +270,7 @@ exports.deletePoolContest = async (req, res) => {
     const pool = await PoolContestModel.findByIdAndDelete({ _id });
     return res
       .status(200)
-      .json({ success: true, Pool: pool ,message: "Pool Contest Deleted Successfully." });
+      .json({ success: true, message: "Pool Contest Deleted Successfully.",  data: pool  });
   } catch (error) {
     console.error("Error creating admin agent:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -300,9 +299,30 @@ exports.editPoolContest = async (req, res) => {
     }
     return res
       .status(200)
-      .json({ success: true, Pool: pool ,message: "Pool Contest Deleted Successfully." });
+      .json({ success: true, message: "Pool Contest Deleted Successfully.",  data: pool  });
   } catch (error) {
     console.error("Error creating admin agent:", error);
     res.status(500).json({status: false, error: "Internal server error" });
   }
 }
+
+exports.addOrUpdateRankPrice = async (req, res) => {
+    try {
+        const { contest_id, rank, price } = req.body;
+
+        if (!contest_id || !rank || !price) {
+            return res.status(400).json({ error: 'Invalid request body' });
+        }
+        const filter = { contest_id };
+        const update = { $set: { [`ranksAndPrices.${rank}`]: price } };
+        const options = { new: true, upsert: true, setDefaultsOnInsert: true };
+
+        const updatedRankPrice = await RankPriceModel.findOneAndUpdate(filter, update, options);
+
+        res.json(updatedRankPrice);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+

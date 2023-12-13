@@ -17,7 +17,10 @@ const {
   registerWithReferral,
   transactions,
   dialCode,
-  getAllPoolContest
+  getAllPoolContest,
+  logOut,
+  savePhoneNumber,
+  getRankPrice
     } = require("../controller/controller");
 
 // Set up multer for handling file uploads
@@ -42,6 +45,9 @@ router.post("/registerwithreferral", registerWithReferral);
 router.post("/transactions",transactions);
 router.post("/dialCode",dialCode);
 router.post("/getpool-contest", getAllPoolContest);
+router.post("/logout", logOut)
+router.post("/savenumber", savePhoneNumber)
+router.post("/getRankPrice", getRankPrice);
 
 // router.post("/upload-pan/:phoneNumber", upload.single('pan'), uploadPan);
 // router.post("/upload-aadhar/:phoneNumber", upload.single('aadhar'), uploadAadhar);

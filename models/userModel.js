@@ -22,13 +22,6 @@ const userSchema = new mongoose.Schema({
   point: Number,
   ip: String,
   os: String,
-  referrerCode: {
-    type: String,
-    unique: true,
-  },
-  referral: {
-    type: String,
-  },
   blocked: {
     type: Boolean,
     default: false,
@@ -47,6 +40,10 @@ const userSchema = new mongoose.Schema({
   ifscCode: String,
   aadhar: String,
   pan: String,
+  isActive: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const UserModel = mongoose.model('User', userSchema);

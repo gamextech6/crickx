@@ -13,7 +13,8 @@ const {
     poolContest,
     getAllPoolContest,
     deletePoolContest,
-    editPoolContest
+    editPoolContest,
+    addOrUpdateRankPrice
 } = require("../controller/adminController");
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -29,6 +30,6 @@ router.post("/pool-contest", poolContest);
 router.post("/getpool-contest", getAllPoolContest);
 router.post("/delete-pool-contest", deletePoolContest);
 router.post("/edit-pool-contest", editPoolContest);
-
+router.post("/pricerank", addOrUpdateRankPrice);
 
 module.exports = router;

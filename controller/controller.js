@@ -4,7 +4,8 @@ const AdminBankModel = require("../models/adminBankModel");
 const UserTransactionsModel = require("../models/userTransactionsModel");
 const PoolContestModel = require("../models/poolContestModel");
 const DialCodeModel = require("../models/dialCodeModel");
-const TeamModel = require("../models/teamModel")
+const TeamModel = require("../models/teamModel");
+const RankPriceModel = require("../models/rankPricemodel");
 const { createJwtToken } = require("../util/tokenUtil");
 const requestIp = require("request-ip");
 const twilio = require("twilio");
@@ -84,6 +85,7 @@ exports.sendOTP = async (req, res) => {
   res.status(200).send({
     sucess: true,
     message: "OTP sent successfully",
+    data: user
   });
 };
 
@@ -104,7 +106,11 @@ exports.verifyOTP = async (req, res) => {
         message: "Verified successfully",
       });
       otpDocument.otp = "";
+      otpDocument.isActive = true;
       otpDocument.save();
+      return res
+      .status(200)
+      .json({ success: true,message: "User otp varified successfully.",  data: otpDocument  });
     } else {
       res.json({ message: "Invalid OTP" });
     }
@@ -119,7 +125,7 @@ exports.getAllUsers = async (req, res) => {
     const allUsers = await UserModel.find();
 
     // Return the user data as JSON
-    res.status(200).json({ success: true, data: allUsers });
+    return res.status(200).json({ success: true, message: "All resistered user",  data: allUsers });
   } catch (error) {
     console.error("Error getting all users:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -140,7 +146,7 @@ exports.blockUser = async (req, res) => {
       return res.status(404).json({ error: "User not found." });
     }
 
-    res.status(200).json({ success: true, blocked: user, message: "User Blocked Successfully" });
+    return res.status(200).json({ success: true, message: "User Blocked Successfully",  data: user });
   } catch (error) {
     console.error("Error blocking/unblocking user:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -161,7 +167,7 @@ exports.unblockUser = async (req, res) => {
       return res.status(404).json({ error: "User not found." });
     }
 
-    res.status(200).json({ success: true, unblockedUser: user, message: "User Unblocked Successfully" });
+    return  res.status(200).json({ success: true, message: "User Unblocked Successfully", data: user });
   } catch (error) {
     console.error("Error blocking/unblocking user:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -188,9 +194,10 @@ exports.updateUserProfile = async (req, res) => {
 
     // Save the updated user profile
     await user.save();
-    res.status(200).send({
+    return res.status(200).send({
       sucess: true,
       message: "User profile updated successfully",
+      data: user
     });
   } catch (error) {
     console.error("Error updating user profile:", error);
@@ -232,9 +239,10 @@ exports.userAddPanAadhar = async (req, res) => {
     user.aadhar = s3UploadAadharResponse.Location;
     // Save user to the database
     await user.save();
-    res.status(200).send({
+    return res.status(200).send({
       sucess: true,
       message: "User account Details submitted successfully.",
+      data: user
     });
   } catch (error) {
     console.error("Error on subbmitting :", error);
@@ -260,10 +268,10 @@ exports.getUserProfile = async (req, res) => {
       gender: user.gender,
       dob: user.dob,
     };
-    res.status(200).send({
+    return res.status(200).send({
       sucess: true,
       message: "User profile got successfully",
-      userProfile,
+      data: userProfile,
     });
 
     // res.json(userProfile);
@@ -292,7 +300,7 @@ exports.getUserBalance = async (req, res) => {
     res.status(200).send({
       sucess: true,
       message: "User ballance got successfully",
-      userBalance,
+      data: userBalance,
     });
 
     // res.json(userBalance);
@@ -337,10 +345,10 @@ exports.getUserReferralCode = async (req, res) => {
     const userRefferal = {
       referrerCode: user.referrerCode,
     };
-    res.status(200).send({
+    return res.status(200).send({
       sucess: true,
       message: "User referral got successfully",
-      userRefferal,
+      data: userRefferal,
     });
 
     // res.json(userBalance);
@@ -374,7 +382,7 @@ exports.registerWithReferral = async (req, res) => {
       // Save the new user
       await newUser.save();
 
-      res.json({ message: "User registered with referral." });
+      return res.status(200).json({super: true, message: "User registered with referral.", data:newUser });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Registration failed." });
@@ -385,9 +393,9 @@ exports.registerWithReferral = async (req, res) => {
 
 exports.transactions = async (req, res) => {
   try {
-    const { userName } = req.body;
-    const transactionDetails = await UserTransactionsModel.find({ userName });
-    res.status(200).json({ success: true, data: transactionDetails });
+    const { phoneNumber } = req.body;
+    const transactionDetails = await UserTransactionsModel.find({ phoneNumber });
+    res.status(200).json({ success: true, message: "All transaction of user ", data: transactionDetails });
   } catch (error) {
     console.error("Error In Fetching Account Detail :", error);
     res.status(500).json({ error: "Internal server error" });
@@ -397,7 +405,7 @@ exports.transactions = async (req, res) => {
 exports.dialCode = async (req, res) => {
   try {
     const dialCode = await DialCodeModel.find();
-    res.status(200).json({ success: true, data: dialCode });
+    return res.status(200).json({ success: true,message:"Dial code for all countery", data: dialCode });
   } catch (error) {
     console.error("Error In Fetching Account Detail :", error);
     res.status(500).json({ error: "Internal server error" });
@@ -410,7 +418,7 @@ exports.getAllPoolContest = async (req, res) => {
     const pool = await PoolContestModel.find({ match_id });
     return res
       .status(200)
-      .json({ success: true, Pool: pool ,message: "All Pool Contest of This match." });
+      .json({ success: true, message: "All Pool Contest of This match.", data: pool  });
   } catch (error) {
     console.error("Error creating admin agent:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -434,7 +442,7 @@ exports.team = async (req, res) => {
     await newPool.save();
     return res
       .status(200)
-      .json({ success: true, newPool: newPool ,message: "Pool Contest Created Successfully." });
+      .json({ success: true, data: newPool ,message: "Pool Contest Created Successfully." });
   } catch (error) {
     console.error("Error creating admin agent:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -529,3 +537,46 @@ exports.createOrUpdateTeam = async (req, res) => {
   }
 };
 
+exports.logOut = async (req, res) => {
+  try {
+    const { phoneNumber } = req.body;
+    const user = await UserModel({phoneNumber});
+    user.isActive = false;
+    user.save();
+    return res.status(201).json({sucess: false, message: "User Blocked Successfully", data: user})
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+
+}
+
+exports.savePhoneNumber = async (req, res) => {
+  const phoneNumber = req.body.phoneNumber;
+  const user = await UserModel.findOne({ phoneNumber: phoneNumber });
+  if (!user) {
+    const newUser = new UserModel({
+      phoneNumber: phoneNumber,
+      isActive: true,
+    });
+    newUser.save();
+    res.status(200).json({ status:true, message:"Hi, Welcome to CrickX", data: newUser })
+  } else {
+    user.isActive = true;
+    user.save();
+    res.status(200).json({ status:true, message:"Hi, Welcome Back", data: user })
+  }
+};
+
+exports.getRankPrice = async (req, res) => {
+  try {
+      const { contest_id } = req.body;
+      const rankPrice = await RankPriceModel.findOne({ contest_id });
+
+      return res.status(200).json({status: true, message: "The rank and price of this contest ",data : rankPrice});
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
