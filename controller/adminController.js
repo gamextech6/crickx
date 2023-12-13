@@ -80,7 +80,7 @@ exports.getUserByPhoneNumber = async (req, res) => {
     res.status(200).send({
       sucess: true,
       message: "User get successfully",
-      user,
+      data: user,
     });
     // res.json({ users });
   } catch (error) {
