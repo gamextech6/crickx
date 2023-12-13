@@ -7,8 +7,6 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const router = express.Router();
 const port = process.env.PORT || 3000;
-// Models
-const UserModel = require('./models/userModel');
 var http = require('http');
 
 //create a server object:

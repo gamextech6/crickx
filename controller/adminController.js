@@ -3,7 +3,7 @@ const UserModel = require("../models/userModel");
 const AdminAgentModel = require("../models/adminAgentModel");
 const UserTransactionsModel = require("../models/userTransactionsModel");
 const PoolContestModel = require("../models/poolContestModel");
-const RankPriceModel = require('../models/rankPricemodel')
+const RankPriceModel = require("../models/rankPricemodel");
 const AWS = require("aws-sdk");
 // const { Storage } = require('@google-cloud/storage');
 // const storage = new Storage();
@@ -61,6 +61,71 @@ exports.adminLogin = async (req, res) => {
   }
 };
 
+exports.getUserByPhoneNumber = async (req, res) => {
+  try {
+    const { phoneNumber } = req.body;
+
+    // Use a regular expression for a case-insensitive search
+
+    // Search for users with a matching username
+    const user = await UserModel.find({ phoneNumber });
+    res.status(200).send({
+      sucess: true,
+      message: "User ballance got successfully",
+      data: user,
+    });
+    // res.json({ users });
+  } catch (error) {
+    console.error("Error searching for users:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.blockUser = async (req, res) => {
+  try {
+    const { phoneNumber } = req.body;
+
+    // Update the user's blocked status
+    const user = await UserModel.findOneAndUpdate(
+      { phoneNumber },
+      { $set: { blocked: true , isActive:false} },
+    );
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    const user1 = await UserModel.find({ phoneNumber: phoneNumber })
+
+    return res.status(200).json({ success: true, message: "User Blocked Successfully",  data: user1 });
+  } catch (error) {
+    console.error("Error blocking/unblocking user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.unblockUser = async (req, res) => {
+  try {
+    const { phoneNumber } = req.body;
+
+    // Update the user's blocked status
+    const user = await UserModel.findOneAndUpdate(
+      { phoneNumber },
+      { $set: { blocked: false } },
+    );
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+    const user1 = await UserModel.find({ phoneNumber: phoneNumber })
+
+    return  res.status(200).json({ success: true, message: "User Unblocked Successfully", data: user1 });
+  } catch (error) {
+    console.error("Error blocking/unblocking user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 exports.createAdminAgent = async (req, res) => {
   try {
     await AdminAgentModel.deleteMany({ userName: null });
@@ -88,7 +153,11 @@ exports.createAdminAgent = async (req, res) => {
 
     return res
       .status(200)
-      .json({ success: true, message: "Admin agent created successfully.", data: newAdminAgent});
+      .json({
+        success: true,
+        message: "Admin agent created successfully.",
+        data: newAdminAgent,
+      });
   } catch (error) {
     console.error("Error creating admin agent:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -100,7 +169,9 @@ exports.getAllAdminAgents = async (req, res) => {
     // Find all admin agents
     const adminAgents = await AdminAgentModel.find();
 
-    res.status(200).json({ success: true,message: "All Admin agent", data: adminAgents });
+    res
+      .status(200)
+      .json({ success: true, message: "All Admin agent", data: adminAgents });
   } catch (error) {
     console.error("Error getting all admin agents:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -151,7 +222,11 @@ exports.blockAdminAgent = async (req, res) => {
 
     res
       .status(200)
-      .json({ success: true, message: "Admin agent blocked successfully.", data: adminAgent });
+      .json({
+        success: true,
+        message: "Admin agent blocked successfully.",
+        data: adminAgent,
+      });
   } catch (error) {
     console.error("Error blocking admin agent:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -178,7 +253,11 @@ exports.unblockAdminAgent = async (req, res) => {
 
     res
       .status(200)
-      .json({ success: true, message: "Admin agent unblocked successfully.", data:adminAgent });
+      .json({
+        success: true,
+        message: "Admin agent unblocked successfully.",
+        data: adminAgent,
+      });
   } catch (error) {
     console.error("Error unblocking admin agent:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -189,12 +268,10 @@ exports.deleteAdminAgent = async (req, res) => {
   try {
     const { userName } = req.body;
     await AdminAgentModel.findOneAndRemove({ userName });
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Admin Agent Deleted Successfully.",
-      });
+    res.status(200).json({
+      success: true,
+      message: "Admin Agent Deleted Successfully.",
+    });
   } catch (error) {
     console.error("Error blocking agent:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -204,8 +281,20 @@ exports.deleteAdminAgent = async (req, res) => {
 exports.getUserCount = async (req, res) => {
   try {
     const totalCount = await UserModel.countDocuments();
-    const activeUser = await UserModel.countDocuments({isActive: true});
-    return res.status(200).json({ success: true, message: "all user", data1: totalCount, data2: activeUser });
+    const totalUser = await UserModel.find();
+    const activeCount = await UserModel.countDocuments({ isActive: true });
+    const activeUser = await UserModel.find({ isActive: true });
+
+    return res
+      .status(200)
+      .json({
+        success: true,
+        message: "all user",
+        allUserCount: totalCount,
+        allUser:totalUser,
+        activeCount: activeCount,
+        activeUser:activeUser
+      });
   } catch (error) {
     console.error("Error getting user count:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -229,59 +318,83 @@ exports.getAdminAgentCount = async (req, res) => {
 
 exports.poolContest = async (req, res) => {
   try {
-    const { match_id, price_pool_percent, entry_fee, total_spots, winning_spots_precent } = req.body;
-    const price_pool = total_spots*entry_fee*price_pool_percent/100;
-    const winning_spots = total_spots*winning_spots_precent/100
-    const newPool = new PoolContestModel({ 
-      match_id, 
-      price_pool_percent, 
+    const {
+      match_id,
+      price_pool_percent,
+      entry_fee,
+      total_spots,
+      winning_spots_precent,
+    } = req.body;
+    const price_pool = (total_spots * entry_fee * price_pool_percent) / 100;
+    const winning_spots = (total_spots * winning_spots_precent) / 100;
+    const newPool = new PoolContestModel({
+      match_id,
+      price_pool_percent,
       price_pool,
-      entry_fee, 
-      total_spots, 
+      entry_fee,
+      total_spots,
       winning_spots_precent,
       winning_spots,
-     });
+    });
     await newPool.save();
     return res
       .status(200)
-      .json({ success: true, message: "Pool Contest Created Successfully.", data: newPool  });
+      .json({
+        success: true,
+        message: "Pool Contest Created Successfully.",
+        data: newPool,
+      });
   } catch (error) {
     console.error("Error creating admin agent:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-}
+};
 
 exports.getAllPoolContest = async (req, res) => {
   try {
-    const { match_id } = req.body
+    const { match_id } = req.body;
     const pool = await PoolContestModel.find({ match_id });
     return res
       .status(200)
-      .json({ success: true, message: "All Pool Contest of This match.", data: pool });
+      .json({
+        success: true,
+        message: "All Pool Contest of This match.",
+        data: pool,
+      });
   } catch (error) {
     console.error("Error creating admin agent:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-}
+};
 
 exports.deletePoolContest = async (req, res) => {
   try {
-    const { _id } = req.body
+    const { _id } = req.body;
     const pool = await PoolContestModel.findByIdAndDelete({ _id });
     return res
       .status(200)
-      .json({ success: true, message: "Pool Contest Deleted Successfully.",  data: pool  });
+      .json({
+        success: true,
+        message: "Pool Contest Deleted Successfully.",
+        data: pool,
+      });
   } catch (error) {
     console.error("Error creating admin agent:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-}
+};
 
 exports.editPoolContest = async (req, res) => {
   try {
-    const { _id, price_pool_percent, entry_fee, total_spots, winning_spots_precent } = req.body;
-    const price_pool = total_spots*entry_fee*price_pool_percent/100;
-    const winning_spots = total_spots*winning_spots_precent/100
+    const {
+      _id,
+      price_pool_percent,
+      entry_fee,
+      total_spots,
+      winning_spots_precent,
+    } = req.body;
+    const price_pool = (total_spots * entry_fee * price_pool_percent) / 100;
+    const winning_spots = (total_spots * winning_spots_precent) / 100;
     const pool = await PoolContestModel.findByIdAndUpdate(
       _id,
       {
@@ -295,34 +408,41 @@ exports.editPoolContest = async (req, res) => {
       { new: true }
     );
     if (!pool) {
-      return res.status(404).json({ error: 'Pool not found' });
+      return res.status(404).json({ error: "Pool not found" });
     }
     return res
       .status(200)
-      .json({ success: true, message: "Pool Contest Deleted Successfully.",  data: pool  });
+      .json({
+        success: true,
+        message: "Pool Contest Deleted Successfully.",
+        data: pool,
+      });
   } catch (error) {
     console.error("Error creating admin agent:", error);
-    res.status(500).json({status: false, error: "Internal server error" });
+    res.status(500).json({ status: false, error: "Internal server error" });
   }
-}
+};
 
 exports.addOrUpdateRankPrice = async (req, res) => {
-    try {
-        const { contest_id, rank, price } = req.body;
+  try {
+    const { contest_id, rank, price } = req.body;
 
-        if (!contest_id || !rank || !price) {
-            return res.status(400).json({ error: 'Invalid request body' });
-        }
-        const filter = { contest_id };
-        const update = { $set: { [`ranksAndPrices.${rank}`]: price } };
-        const options = { new: true, upsert: true, setDefaultsOnInsert: true };
-
-        const updatedRankPrice = await RankPriceModel.findOneAndUpdate(filter, update, options);
-
-        res.json(updatedRankPrice);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+    if (!contest_id || !rank || !price) {
+      return res.status(400).json({ error: "Invalid request body" });
     }
-}
+    const filter = { contest_id };
+    const update = { $set: { [`ranksAndPrices.${rank}`]: price } };
+    const options = { new: true, upsert: true, setDefaultsOnInsert: true };
 
+    const updatedRankPrice = await RankPriceModel.findOneAndUpdate(
+      filter,
+      update,
+      options
+    );
+
+    res.json(updatedRankPrice);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

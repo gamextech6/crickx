@@ -8,13 +8,16 @@ const {
     blockAdminAgent, 
     unblockAdminAgent, 
     getAllAdminAgents, 
-    getUserCount, 
+    getUserCount,
+    getUserByPhoneNumber, 
+    blockUser,
+    unblockUser,
     getAdminAgentCount,
     poolContest,
     getAllPoolContest,
     deletePoolContest,
     editPoolContest,
-    addOrUpdateRankPrice
+    addOrUpdateRankPrice,
 } = require("../controller/adminController");
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -25,6 +28,9 @@ router.post("/getadmin-agent/:userName", getAdminAgentDetails);
 router.put("/admin-agent/block/:userName", blockAdminAgent);
 router.put("/admin-agent/unblock/:userName", unblockAdminAgent);
 router.post("/gettotal-user", getUserCount);
+router.post("/getUserByPhoneNumber", getUserByPhoneNumber);
+router.post("/block-user", blockUser);
+router.post("/unblock-user", unblockUser);
 router.post("/gettotal-admin-agent", getAdminAgentCount);
 router.post("/pool-contest", poolContest);
 router.post("/getpool-contest", getAllPoolContest);
