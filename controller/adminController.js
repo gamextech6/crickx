@@ -69,10 +69,18 @@ exports.getUserByPhoneNumber = async (req, res) => {
 
     // Search for users with a matching username
     const user = await UserModel.find({ phoneNumber });
+    if(!user){
+      res.status(201).send({
+        sucess: false,
+        message: "User Not Found",
+      });
+    }
+    
+    
     res.status(200).send({
       sucess: true,
-      message: "User ballance got successfully",
-      data: user,
+      message: "User get successfully",
+      user,
     });
     // res.json({ users });
   } catch (error) {
