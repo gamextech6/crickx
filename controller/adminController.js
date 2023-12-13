@@ -63,11 +63,7 @@ exports.adminLogin = async (req, res) => {
 
 exports.getUserByPhoneNumber = async (req, res) => {
   try {
-    const { phoneNumber } = req.body;
-
-    // Use a regular expression for a case-insensitive search
-
-    // Search for users with a matching username
+    const { phoneNumber } = req.params;
     const user = await UserModel.find({ phoneNumber });
     if(!user){
       res.status(201).send({
@@ -75,8 +71,6 @@ exports.getUserByPhoneNumber = async (req, res) => {
         message: "User Not Found",
       });
     }
-    
-    
     res.status(200).send({
       sucess: true,
       message: "User get successfully",
