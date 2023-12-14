@@ -41,8 +41,7 @@ const generateReferrerCode = async () => {
 };
 
 exports.updateUserProfile = async (req, res) => {
-  const phoneNumber = req.body.phoneNumber;
-  const { firstName, lastName, gender, dob } = req.body;
+  const { phoneNumber, firstName, lastName, gender, dob } = req.body;
 
   try {
     // Search for the user with the provided phone number

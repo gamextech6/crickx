@@ -33,7 +33,7 @@ router.post("/getuser", getUserByPhoneNumber);
 router.post("/block-user", blockUser);
 router.post("/unblock-user", unblockUser);
 router.post("/pool-contest", poolContest);
-router.post("/getpool-contest", getAllPoolContest);
+router.post("/getpool-contest/:match_id", getAllPoolContest);
 router.post("/delete-pool-contest", deletePoolContest);
 router.post("/edit-pool-contest", editPoolContest);
 router.post("/pricerank", addOrUpdateRankPrice);

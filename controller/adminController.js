@@ -353,7 +353,7 @@ exports.poolContest = async (req, res) => {
 
 exports.getAllPoolContest = async (req, res) => {
   try {
-    const { match_id } = req.body;
+    const { match_id } = req.params;
     const pool = await PoolContestModel.find({ match_id });
     return res
       .status(200)
