@@ -8,7 +8,6 @@ const AWS = require("aws-sdk");
 // const { Storage } = require('@google-cloud/storage');
 // const storage = new Storage();
 const AdminBankModel = require("../models/adminBankModel");
-const { createJwtToken } = require("../util/tokenUtil");
 const requestIp = require("request-ip");
 const twilio = require("twilio");
 const client = new twilio(

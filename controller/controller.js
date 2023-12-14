@@ -6,7 +6,6 @@ const PoolContestModel = require("../models/poolContestModel");
 const DialCodeModel = require("../models/dialCodeModel");
 const TeamModel = require("../models/teamModel");
 const RankPriceModel = require("../models/rankPricemodel");
-const { createJwtToken } = require("../util/tokenUtil");
 const requestIp = require("request-ip");
 const twilio = require("twilio");
 const AWS = require("aws-sdk");
