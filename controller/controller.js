@@ -49,7 +49,7 @@ exports.updateUserProfile = async (req, res) => {
     const user = await UserModel.findOne({ phoneNumber });
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).send({ message: "User not found" });
     }
 
     // Update user profile information
@@ -67,7 +67,7 @@ exports.updateUserProfile = async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating user profile:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).send({ error: "Internal server error" });
   }
 };
 
@@ -79,7 +79,7 @@ exports.userAddPanAadhar = async (req, res) => {
     if (blockedUser) {
       return res
         .status(403)
-        .json({
+        .send({
           error:
             "User is blocked. Cannot able to upload bank details. Please connect to support team.",
         });
@@ -112,7 +112,7 @@ exports.userAddPanAadhar = async (req, res) => {
     });
   } catch (error) {
     console.error("Error on subbmitting :", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).send({ error: "Internal server error" });
   }
 };
 
@@ -124,7 +124,7 @@ exports.getUserProfile = async (req, res) => {
     const user = await UserModel.findOne({ phoneNumber });
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).send({ message: "User not found" });
     }
 
     // Return user profile information
@@ -140,10 +140,10 @@ exports.getUserProfile = async (req, res) => {
       data: userProfile,
     });
 
-    // res.json(userProfile);
+    // res.send(userProfile);
   } catch (error) {
     console.error("Error retrieving user profile:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).send({ error: "Internal server error" });
   }
 };
 
@@ -160,10 +160,10 @@ exports.getUserByPhoneNumber = async (req, res) => {
       message: "User ballance got successfully",
       data: user,
     });
-    // res.json({ users });
+    // res.send({ users });
   } catch (error) {
     console.error("Error searching for users:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).send({ error: "Internal server error" });
   }
 };
 
@@ -175,7 +175,7 @@ exports.getUserReferralCode = async (req, res) => {
     const user = await UserModel.findOne({ phoneNumber });
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).send({ message: "User not found" });
     }
 
     // Return user profile information
@@ -188,10 +188,10 @@ exports.getUserReferralCode = async (req, res) => {
       data: userRefferal,
     });
 
-    // res.json(userBalance);
+    // res.send(userBalance);
   } catch (error) {
     console.error("Error retrieving user profile:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).send({ error: "Internal server error" });
   }
 };
 
@@ -204,7 +204,7 @@ exports.registerWithReferral = async (req, res) => {
       // Check if the referral code exists in the database
       const referrer = await UserModel.findOne({ referrerCode: referralCode });
       if (!referrer) {
-        return res.status(400).json({ message: "Referral code not found." });
+        return res.status(400).send({ message: "Referral code not found." });
       }
 
       const newUser = new UserModel({
@@ -219,33 +219,33 @@ exports.registerWithReferral = async (req, res) => {
       // Save the new user
       await newUser.save();
 
-      return res.status(200).json({super: true, message: "User registered with referral.", data:newUser });
+      return res.status(200).send({super: true, message: "User registered with referral.", data:newUser });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Registration failed." });
+      res.status(500).send({ message: "Registration failed." });
     }
   }
-  res.json;
+  res.send;
 };
 
 exports.transactions = async (req, res) => {
   try {
     const { phoneNumber } = req.body;
     const transactionDetails = await UserTransactionsModel.find({ phoneNumber });
-    res.status(200).json({ success: true, message: "All transaction of user ", data: transactionDetails });
+    res.status(200).send({ success: true, message: "All transaction of user ", data: transactionDetails });
   } catch (error) {
     console.error("Error In Fetching Account Detail :", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).send({ error: "Internal server error" });
   }
 };
 
 exports.dialCode = async (req, res) => {
   try {
     const dialCode = await DialCodeModel.find();
-    return res.status(200).json({ success: true,message:"Dial code for all countery", data: dialCode });
+    return res.status(200).send({ success: true,message:"Dial code for all countery", data: dialCode });
   } catch (error) {
     console.error("Error In Fetching Account Detail :", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).send({ error: "Internal server error" });
   }
 };
 
@@ -255,10 +255,10 @@ exports.getAllPoolContest = async (req, res) => {
     const pool = await PoolContestModel.find({ match_id });
     return res
       .status(200)
-      .json({ success: true, message: "All Pool Contest of This match.", data: pool  });
+      .send({ success: true, message: "All Pool Contest of This match.", data: pool  });
   } catch (error) {
     console.error("Error creating admin agent:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).send({ error: "Internal server error" });
   }
 }
 
@@ -279,10 +279,10 @@ exports.team = async (req, res) => {
     await newPool.save();
     return res
       .status(200)
-      .json({ success: true, data: newPool ,message: "Pool Contest Created Successfully." });
+      .send({ success: true, data: newPool ,message: "Pool Contest Created Successfully." });
   } catch (error) {
     console.error("Error creating admin agent:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).send({ error: "Internal server error" });
   }
 }
 
@@ -308,7 +308,7 @@ exports.updatePlayer = async (req, res) => {
     });
 
     if (!team) {
-      return res.status(404).json({ error: 'Player not found in any team' });
+      return res.status(404).send({ error: 'Player not found in any team' });
     }
 
     ['player1', 'player2', 'player3', 'player4', 'player5', 'player6', 'player7', 'player8', 'player9', 'player10', 'player11'].forEach(
@@ -323,10 +323,10 @@ exports.updatePlayer = async (req, res) => {
 
     await team.save();
 
-    res.json({ message: 'Player updated successfully' });
+    res.send({ message: 'Player updated successfully' });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).send({ error: 'Internal Server Error' });
   }
 };
 
@@ -336,7 +336,7 @@ exports.createOrUpdateTeam = async (req, res) => {
 
     // Validate if the required fields are present
     if (!match_id || !contest_id || !players || players.length !== 11) {
-      return res.status(400).json({ error: 'Invalid request body' });
+      return res.status(400).send({ error: 'Invalid request body' });
     }
 
     // Construct the team object based on the provided player data
@@ -351,7 +351,7 @@ exports.createOrUpdateTeam = async (req, res) => {
 
       // Validate if the required fields are present for each player
       if (!playerInfo || !playerInfo.pid || !playerInfo.fantasy_Point) {
-        return res.status(400).json({ error: `Invalid data for ${playerKey}` });
+        return res.status(400).send({ error: `Invalid data for ${playerKey}` });
       }
 
       teamData[playerKey] = {
@@ -367,10 +367,10 @@ exports.createOrUpdateTeam = async (req, res) => {
 
     const updatedTeam = await TeamModel.findOneAndUpdate(filter, teamData, options);
 
-    res.json(updatedTeam);
+    res.send(updatedTeam);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).send({ error: 'Internal Server Error' });
   }
 };
 
@@ -380,11 +380,11 @@ exports.logOut = async (req, res) => {
     const user = await UserModel({phoneNumber});
     user.isActive = false;
     user.save();
-    return res.status(201).json({sucess: false, message: "User Blocked Successfully", data: user})
+    return res.status(201).send({sucess: false, message: "User Blocked Successfully", data: user})
     
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).send({ error: 'Internal Server Error' });
   }
 
 }
@@ -398,11 +398,11 @@ exports.savePhoneNumber = async (req, res) => {
       isActive: true,
     });
     newUser.save();
-    res.status(200).json({ status:true, message:"Hi, Welcome to CrickX", data: newUser })
+    res.status(200).send({ status:true, message:"Hi, Welcome to CrickX", data: newUser })
   } else {
     user.isActive = true;
     user.save();
-    res.status(200).json({ status:true, message:"Hi, Welcome Back", data: user })
+    res.status(200).send({ status:true, message:"Hi, Welcome Back", data: user })
   }
 };
 
@@ -411,9 +411,9 @@ exports.getRankPrice = async (req, res) => {
       const { contest_id } = req.body;
       const rankPrice = await RankPriceModel.findOne({ contest_id });
 
-      return res.status(200).json({status: true, message: "The rank and price of this contest ",data : rankPrice});
+      return res.status(200).send({status: true, message: "The rank and price of this contest ",data : rankPrice});
   } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
+      res.status(500).send({ error: 'Internal Server Error' });
   }
 }

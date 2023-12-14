@@ -11,9 +11,9 @@ exports.addDepositTransaction = async (req, res) => {
     await transaction.save();
     return res
       .status(200)
-      .json({ success: true, message: "Transaction added successfully.", data: transaction });
+      .send({ success: true, message: "Transaction added successfully.", data: transaction });
   } catch (error) {
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).send({ error: "Internal server error" });
   }
 };
 
@@ -29,9 +29,9 @@ exports.getDailyDepositTransactions = async (req, res) => {
       },
     });
 
-    res.status(200).json({ success: true, message: "Todays Deposit Transactions.", data: dailyTransactions });
+    res.status(200).send({ success: true, message: "Todays Deposit Transactions.", data: dailyTransactions });
   } catch (error) {
-    res.status(500).json({ error: "Error getting daily transactions" });
+    res.status(500).send({ error: "Error getting daily transactions" });
   }
 };
 
@@ -51,9 +51,9 @@ exports.getDailyDepositTransactionsByBankAccountNumber = async (req, res) => {
       bankAccountNumber: bankAccountNumber,
     });
 
-    res.status(200).json({ success: true, message: "Todays Deposit Transactions of one Account Number.", data: dailyTransactions });
+    res.status(200).send({ success: true, message: "Todays Deposit Transactions of one Account Number.", data: dailyTransactions });
   } catch (error) {
-    res.status(500).json({ error: "Error getting daily transactions" });
+    res.status(500).send({ error: "Error getting daily transactions" });
   }
 };
 
@@ -71,9 +71,9 @@ exports.getMonthlyDepositTransactions = async (req, res) => {
       },
     });
 
-    res.status(200).json({ success: true, message: "Monthly Deposit Transactions", data: monthlyTransactions });
+    res.status(200).send({ success: true, message: "Monthly Deposit Transactions", data: monthlyTransactions });
   } catch (error) {
-    res.status(500).json({ error: "Error getting monthly transactions" });
+    res.status(500).send({ error: "Error getting monthly transactions" });
   }
 };
 
@@ -92,9 +92,9 @@ exports.getMonthlyDepositTransactionsByBankAccountNumber = async (req, res) => {
       bankAccountNumber
     });
 
-    res.status(200).json({ success: true, message: "Monthly Deposit Transactions", data: monthlyTransactions });
+    res.status(200).send({ success: true, message: "Monthly Deposit Transactions", data: monthlyTransactions });
   } catch (error) {
-    res.status(500).json({ error: "Error getting monthly transactions" });
+    res.status(500).send({ error: "Error getting monthly transactions" });
   }
 };
 
@@ -113,9 +113,9 @@ exports.getYearlyDepositTransactionsByBankAccountNumber = async (req, res) => {
       bankAccountNumber
     });
 
-    res.status(200).json({ success: true, message: "Yearly Deposit Transactions", data: yearlyTransactions });
+    res.status(200).send({ success: true, message: "Yearly Deposit Transactions", data: yearlyTransactions });
   } catch (error) {
-    res.status(500).json({ error: "Error getting yearly transactions" });
+    res.status(500).send({ error: "Error getting yearly transactions" });
   }
 };
 
@@ -133,9 +133,9 @@ exports.getYearlyDepositTransactions = async (req, res) => {
       },
     });
 
-    res.status(200).json({ success: true, message: "Yearly Deposit Transactions", data: yearlyTransactions });
+    res.status(200).send({ success: true, message: "Yearly Deposit Transactions", data: yearlyTransactions });
   } catch (error) {
-    res.status(500).json({ error: "Error getting yearly transactions" });
+    res.status(500).send({ error: "Error getting yearly transactions" });
   }
 };
 
@@ -149,9 +149,9 @@ exports.addWithdrawlTransaction = async (req, res) => {
     await transaction.save();
     return res
       .status(200)
-      .json({ success: true, message: "Transaction Withdrawl successfully.", data: transaction });
+      .send({ success: true, message: "Transaction Withdrawl successfully.", data: transaction });
   } catch (error) {
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).send({ error: "Internal server error" });
   }
 };
 
@@ -166,9 +166,9 @@ exports.getDailyWithdrawlTransactions = async (req, res) => {
         $lte: endOfDay,
       },
     });
-    res.status(200).json({ success: true, message: "Today's Withdrawl Transaction.", data: dailyTransactions });
+    res.status(200).send({ success: true, message: "Today's Withdrawl Transaction.", data: dailyTransactions });
   } catch (error) {
-    res.status(500).json({ error: "Error getting daily transactions" });
+    res.status(500).send({ error: "Error getting daily transactions" });
   }
 };
 
@@ -188,9 +188,9 @@ exports.getDailyWithdrawlTransactionsByBankAccountNumber = async (req, res) => {
       bankAccountNumber: bankAccountNumber,
     });
 
-    res.status(200).json({ success: true, message: "Today's Withdrawl Transaction of one Account Number.", data: dailyTransactions });
+    res.status(200).send({ success: true, message: "Today's Withdrawl Transaction of one Account Number.", data: dailyTransactions });
   } catch (error) {
-    res.status(500).json({ error: "Error getting daily transactions" });
+    res.status(500).send({ error: "Error getting daily transactions" });
   }
 };
 
@@ -207,9 +207,9 @@ exports.getMonthlyWithdrawlTransactions = async (req, res) => {
         $lt: endOfMonth,
       },
     });
-    res.status(200).json({ success: true, message: "Today's Withdrawl Transaction.", data: monthlyTransactions });
+    res.status(200).send({ success: true, message: "Today's Withdrawl Transaction.", data: monthlyTransactions });
   } catch (error) {
-    res.status(500).json({ error: "Error getting monthly transactions" });
+    res.status(500).send({ error: "Error getting monthly transactions" });
   }
 };
 
@@ -227,9 +227,9 @@ exports.getMonthlyWithdrawlTransactionsByBankAccountNumber = async (req, res) =>
       },
       bankAccountNumber
     });
-    res.status(200).json({ success: true, message: "Monthly Withdrawl Transaction.", data: monthlyTransactions });
+    res.status(200).send({ success: true, message: "Monthly Withdrawl Transaction.", data: monthlyTransactions });
   } catch (error) {
-    res.status(500).json({ error: "Error getting monthly transactions" });
+    res.status(500).send({ error: "Error getting monthly transactions" });
   }
 };
 
@@ -247,9 +247,9 @@ exports.getYearlyWithdrawlTransactions = async (req, res) => {
       },
     });
 
-    res.status(200).json({ success: true, data: yearlyTransactions });
+    res.status(200).send({ success: true, data: yearlyTransactions });
   } catch (error) {
-    res.status(500).json({ error: "Error getting yearly transactions" });
+    res.status(500).send({ error: "Error getting yearly transactions" });
   }
 };
 
@@ -268,8 +268,8 @@ exports.getYearlyWithdrawlTransactionsByBankAccountNumber = async (req, res) => 
       bankAccountNumber
     });
 
-    res.status(200).json({ success: true, message: "Yearly Withdrawl Transaction.", data: yearlyTransactions });
+    res.status(200).send({ success: true, message: "Yearly Withdrawl Transaction.", data: yearlyTransactions });
   } catch (error) {
-    res.status(500).json({ error: "Error getting yearly transactions" });
+    res.status(500).send({ error: "Error getting yearly transactions" });
   }
 };

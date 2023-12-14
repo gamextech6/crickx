@@ -48,7 +48,7 @@ exports.adminLogin = async (req, res) => {
     const admin = await AdminModel.findOne({ username, password });
 
     if (!admin) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(401).send({ message: "Invalid credentials" });
     }
     return res.status(200).send({
       sucess: true,
@@ -56,7 +56,7 @@ exports.adminLogin = async (req, res) => {
     });
   } catch (error) {
     console.error("Error during admin login:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).send({ message: "Internal server error" });
   }
 };
 
@@ -75,10 +75,10 @@ exports.getUserByPhoneNumber = async (req, res) => {
       message: "User get successfully",
       data: user,
     });
-    // res.json({ users });
+    // res.send({ users });
   } catch (error) {
     console.error("Error searching for users:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).send({ error: "Internal server error" });
   }
 };
 
@@ -93,15 +93,15 @@ exports.blockUser = async (req, res) => {
     );
 
     if (!user) {
-      return res.status(404).json({ error: "User not found." });
+      return res.status(404).send({ error: "User not found." });
     }
 
     const user1 = await UserModel.find({ phoneNumber: phoneNumber })
 
-    return res.status(200).json({ success: true, message: "User Blocked Successfully",  data: user1 });
+    return res.status(200).send({ success: true, message: "User Blocked Successfully",  data: user1 });
   } catch (error) {
     console.error("Error blocking/unblocking user:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).send({ error: "Internal server error" });
   }
 };
 
@@ -116,14 +116,14 @@ exports.unblockUser = async (req, res) => {
     );
 
     if (!user) {
-      return res.status(404).json({ error: "User not found." });
+      return res.status(404).send({ error: "User not found." });
     }
     const user1 = await UserModel.find({ phoneNumber: phoneNumber })
 
-    return  res.status(200).json({ success: true, message: "User Unblocked Successfully", data: user1 });
+    return  res.status(200).send({ success: true, message: "User Unblocked Successfully", data: user1 });
   } catch (error) {
     console.error("Error blocking/unblocking user:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).send({ error: "Internal server error" });
   }
 };
 
@@ -137,7 +137,7 @@ exports.createAdminAgent = async (req, res) => {
     const existingUser = await AdminAgentModel.findOne({ userName });
 
     if (existingUser) {
-      return res.status(400).json({ error: "Username is already taken." });
+      return res.status(400).send({ error: "Username is already taken." });
     }
 
     // Create a new admin agent
@@ -154,14 +154,14 @@ exports.createAdminAgent = async (req, res) => {
 
     return res
       .status(200)
-      .json({
+      .send({
         success: true,
         message: "Admin agent created successfully.",
         data: newAdminAgent,
       });
   } catch (error) {
     console.error("Error creating admin agent:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).send({ error: "Internal server error" });
   }
 };
 
@@ -172,10 +172,10 @@ exports.getAllAdminAgents = async (req, res) => {
 
     res
       .status(200)
-      .json({ success: true, message: "All Admin agent", data: adminAgents });
+      .send({ success: true, message: "All Admin agent", data: adminAgents });
   } catch (error) {
     console.error("Error getting all admin agents:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).send({ error: "Internal server error" });
   }
 };
 
@@ -188,7 +188,7 @@ exports.getAdminAgentDetails = async (req, res) => {
 
     // Check if the admin agent exists
     if (!adminAgent) {
-      return res.status(404).json({ error: "Admin agent not found." });
+      return res.status(404).send({ error: "Admin agent not found." });
     }
 
     // Return the admin agent details
@@ -199,7 +199,7 @@ exports.getAdminAgentDetails = async (req, res) => {
     });
   } catch (error) {
     console.error("Error getting admin agent details:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).send({ error: "Internal server error" });
   }
 };
 
@@ -212,7 +212,7 @@ exports.blockAdminAgent = async (req, res) => {
 
     // Check if the admin agent exists
     if (!adminAgent) {
-      return res.status(404).json({ error: "Admin agent not found." });
+      return res.status(404).send({ error: "Admin agent not found." });
     }
 
     // Update the admin agent's status to blocked
@@ -223,14 +223,14 @@ exports.blockAdminAgent = async (req, res) => {
 
     res
       .status(200)
-      .json({
+      .send({
         success: true,
         message: "Admin agent blocked successfully.",
         data: adminAgent,
       });
   } catch (error) {
     console.error("Error blocking admin agent:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).send({ error: "Internal server error" });
   }
 };
 
@@ -243,7 +243,7 @@ exports.unblockAdminAgent = async (req, res) => {
 
     // Check if the admin agent exists
     if (!adminAgent) {
-      return res.status(404).json({ error: "Admin agent not found." });
+      return res.status(404).send({ error: "Admin agent not found." });
     }
 
     // Update the admin agent's status to unblocked
@@ -254,14 +254,14 @@ exports.unblockAdminAgent = async (req, res) => {
 
     res
       .status(200)
-      .json({
+      .send({
         success: true,
         message: "Admin agent unblocked successfully.",
         data: adminAgent,
       });
   } catch (error) {
     console.error("Error unblocking admin agent:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).send({ error: "Internal server error" });
   }
 };
 
@@ -269,13 +269,13 @@ exports.deleteAdminAgent = async (req, res) => {
   try {
     const { userName } = req.body;
     await AdminAgentModel.findOneAndRemove({ userName });
-    res.status(200).json({
+    res.status(200).send({
       success: true,
       message: "Admin Agent Deleted Successfully.",
     });
   } catch (error) {
     console.error("Error blocking agent:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).send({ error: "Internal server error" });
   }
 };
 
@@ -288,7 +288,7 @@ exports.getUserCount = async (req, res) => {
 
     return res
       .status(200)
-      .json({
+      .send({
         success: true,
         message: "all user",
         allUserCount: totalCount,
@@ -298,7 +298,7 @@ exports.getUserCount = async (req, res) => {
       });
   } catch (error) {
     console.error("Error getting user count:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).send({ error: "Internal server error" });
   }
 };
 
@@ -310,10 +310,10 @@ exports.getAdminAgentCount = async (req, res) => {
       message: "Today Admin Agent Count",
       data: totalCount,
     });
-    // res.status(200).json({ success: true, totalCount });
+    // res.status(200).send({ success: true, totalCount });
   } catch (error) {
     console.error("Error getting user count:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).send({ error: "Internal server error" });
   }
 };
 
@@ -340,14 +340,14 @@ exports.poolContest = async (req, res) => {
     await newPool.save();
     return res
       .status(200)
-      .json({
+      .send({
         success: true,
         message: "Pool Contest Created Successfully.",
         data: newPool,
       });
   } catch (error) {
     console.error("Error creating admin agent:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).send({ error: "Internal server error" });
   }
 };
 
@@ -357,14 +357,14 @@ exports.getAllPoolContest = async (req, res) => {
     const pool = await PoolContestModel.find({ match_id });
     return res
       .status(200)
-      .json({
+      .send({
         success: true,
         message: "All Pool Contest of This match.",
         data: pool,
       });
   } catch (error) {
     console.error("Error creating admin agent:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).send({ error: "Internal server error" });
   }
 };
 
@@ -374,14 +374,14 @@ exports.deletePoolContest = async (req, res) => {
     const pool = await PoolContestModel.findByIdAndDelete({ _id });
     return res
       .status(200)
-      .json({
+      .send({
         success: true,
         message: "Pool Contest Deleted Successfully.",
         data: pool,
       });
   } catch (error) {
     console.error("Error creating admin agent:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).send({ error: "Internal server error" });
   }
 };
 
@@ -409,18 +409,18 @@ exports.editPoolContest = async (req, res) => {
       { new: true }
     );
     if (!pool) {
-      return res.status(404).json({ error: "Pool not found" });
+      return res.status(404).send({ error: "Pool not found" });
     }
     return res
       .status(200)
-      .json({
+      .send({
         success: true,
         message: "Pool Contest Deleted Successfully.",
         data: pool,
       });
   } catch (error) {
     console.error("Error creating admin agent:", error);
-    res.status(500).json({ status: false, error: "Internal server error" });
+    res.status(500).send({ status: false, error: "Internal server error" });
   }
 };
 
@@ -429,7 +429,7 @@ exports.addOrUpdateRankPrice = async (req, res) => {
     const { contest_id, rank, price } = req.body;
 
     if (!contest_id || !rank || !price) {
-      return res.status(400).json({ error: "Invalid request body" });
+      return res.status(400).send({ error: "Invalid request body" });
     }
     const filter = { contest_id };
     const update = { $set: { [`ranksAndPrices.${rank}`]: price } };
@@ -441,9 +441,9 @@ exports.addOrUpdateRankPrice = async (req, res) => {
       options
     );
 
-    res.json(updatedRankPrice);
+    res.send(updatedRankPrice);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).send({ error: "Internal Server Error" });
   }
 };
