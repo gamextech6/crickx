@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
   phoneNumber: {
     type: String,
     unique: true,
-    require:true
+    required:true
   },
   firstName: String,
   lastName: String,
@@ -30,8 +30,7 @@ const userSchema = new mongoose.Schema({
   branchName : String,
   accountHolderName: String, 
   bankAccountNumber: {
-    type: String,
-    unique: true,
+    type: String
   },
   ifscCode: String,
   aadhar: String,
