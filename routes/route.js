@@ -12,6 +12,7 @@ const {
   transactions,
   dialCode,
   getAllPoolContest,
+  getPoolContest,
   logOut,
   savePhoneNumber,
   getRankPrice,
@@ -32,7 +33,8 @@ router.post("/user-raferral", getUserReferralCode);
 router.post("/registerwithreferral", registerWithReferral);
 router.post("/transactions",transactions);
 router.post("/dialCode",dialCode);
-router.post("/getpool-contest", getAllPoolContest);
+router.post("/getpool", getAllPoolContest);
+router.post("/getpool-contest", getPoolContest);
 router.post("/logout", logOut)
 router.post("/savenumber", savePhoneNumber)
 router.post("/getRankPrice", getRankPrice);

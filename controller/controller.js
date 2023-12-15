@@ -418,3 +418,19 @@ exports.getRankPrice = async (req, res) => {
       res.status(500).send({ error: 'Internal Server Error' });
   }
 }
+
+exports.getPoolContest = async (req, res) => {
+  try {
+    const { contest_id } = req.body;
+    const pool = await PoolContestModel.find({ _id: contest_id });
+    return res
+      .status(200)
+      .send({
+        success: true,
+        data: pool,
+      });
+  } catch (error) {
+    console.error("Error creating admin agent:", error);
+    res.status(500).send({ error: "Internal server error" });
+  }
+};
