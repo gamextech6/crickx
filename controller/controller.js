@@ -398,7 +398,9 @@ exports.savePhoneNumber = async (req, res) => {
     });
     newUser.save();
     res.status(200).send({ status:true, message:"Hi, Welcome to CrickX", data: newUser })
-  } else {
+  } else if (user.blocked) {
+    res.status(201).send({ status:false, message:"Hi, You are blocked.", data: user })
+  }else{
     user.isActive = true;
     user.save();
     res.status(200).send({ status:true, message:"Hi, Welcome Back", data: user })
