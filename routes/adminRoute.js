@@ -29,7 +29,7 @@ router.put("/admin-agent/block", blockAdminAgent);
 router.put("/admin-agent/unblock", unblockAdminAgent);
 router.post("/gettotal-admin-agent", getAdminAgentCount);
 router.post("/gettotal-user", getUserCount);
-router.post("/getuser", getUserByPhoneNumber);
+router.post("/getuser/:phoneNumber", getUserByPhoneNumber);
 router.post("/block-user", blockUser);
 router.post("/unblock-user", unblockUser);
 router.post("/pool-contest", poolContest);
