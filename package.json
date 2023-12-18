@@ -8,7 +8,8 @@
     "start": "nodemon index.js",
     "build": "npm install && npm run build-server",
     "build-server": "echo 'Building server...' && npm run compile-server",
-    "compile-server": "echo 'Compiling server...'"
+    "compile-server": "echo 'Compiling server...'",
+    "deploy": "serverless deploy"
   },
   "author": "",
   "license": "ISC",
@@ -22,6 +23,7 @@
     "multer": "^1.4.5-lts.1",
     "nodemon": "^3.0.2",
     "request-ip": "^3.3.0",
+    "serverless-http": "^3.2.0",
     "twilio": "^4.19.3"
   }
 }

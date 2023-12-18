@@ -21,25 +21,6 @@ const s3 = new AWS.S3({
 });
 const os = require("os").platform();
 
-const generateReferrerCode = async () => {
-  let code;
-  let isUnique = false;
-
-  while (!isUnique) {
-    // Generate a random 6-character code (you can adjust the length)
-    code = Math.random().toString(36).slice(2, 8).toUpperCase();
-
-    // Check if the code is unique
-    const existingUser = await (UserModel.findOne({ referrerCode: code }) ||
-      AdminModel.findOne({ referrerCode: code }));
-    if (!existingUser) {
-      isUnique = true;
-    }
-  }
-
-  return code;
-};
-
 exports.adminLogin = async (req, res) => {
   const { username, password } = req.body;
 
@@ -285,6 +266,8 @@ exports.getUserCount = async (req, res) => {
     const totalUser = await UserModel.find();
     const activeCount = await UserModel.countDocuments({ isActive: true });
     const activeUser = await UserModel.find({ isActive: true });
+    const blockedCount = await UserModel.countDocuments({ blocked: true });
+    const blockedUser = await UserModel.find({ blocked: true });
 
     return res
       .status(200)
@@ -294,7 +277,9 @@ exports.getUserCount = async (req, res) => {
         allUserCount: totalCount,
         allUser:totalUser,
         activeCount: activeCount,
-        activeUser:activeUser
+        activeUser:activeUser,
+        blockedCount: blockedCount,
+        blockedUser: blockedUser
       });
   } catch (error) {
     console.error("Error getting user count:", error);

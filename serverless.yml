@@ -1,0 +1,27 @@
+
+service: crickx
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  memorySize: 2048
+  stage: dev
+  region: eu-north-1
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - http: ANY /{proxy+}
+      - http: ANy /
+    environment:
+      PORT: 8000
+      MONGOOSE_URI: mongodb+srv://gamextech6:gamextech6@cluster0.6wslpfq.mongodb.net/crickx?retryWrites=true&w=majority
+      ACCESS_KEY_Id: AKIAQ7VCZEQ4GONMYF7M
+      SECRET_ACCESS_KEY: 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
+      REGION: eu-north-1
+      GCS_BUCKET: gamex
+      PAN_BUCKET: betx.one.pan
+      AADHAR_BUCKET: betx.one.aadhar
+      QR_BUCKET: betx.one.qr
