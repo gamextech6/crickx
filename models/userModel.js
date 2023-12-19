@@ -29,9 +29,7 @@ const userSchema = new mongoose.Schema({
   bankName : String,
   branchName : String,
   accountHolderName: String, 
-  bankAccountNumber: {
-    type: String
-  },
+  bankAccountNumber:String,
   ifscCode: String,
   aadhar: String,
   pan: String,

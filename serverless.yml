@@ -4,17 +4,20 @@ frameworkVersion: "3"
 
 provider:
   name: aws
+  deploymentMethod: direct
   runtime: nodejs18.x
   memorySize: 2048
   stage: dev
   region: eu-north-1
+  deploymentBucket:
+    name: crickx.sls
 
 functions:
   hello:
     handler: handler.hello
     events:
       - http: ANY /{proxy+}
-      - http: ANy /
+      - http: ANY /
     environment:
       PORT: 8000
       MONGOOSE_URI: mongodb+srv://gamextech6:gamextech6@cluster0.6wslpfq.mongodb.net/crickx?retryWrites=true&w=majority

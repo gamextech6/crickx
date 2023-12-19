@@ -2,10 +2,10 @@
   "name": "crickx",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js",
+    "start": "nodemon app.js",
     "build": "npm install && npm run build-server",
     "build-server": "echo 'Building server...' && npm run compile-server",
     "compile-server": "echo 'Compiling server...'",
