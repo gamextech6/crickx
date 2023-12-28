@@ -9,6 +9,9 @@ const teamSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    total_fantasy_Point:{
+        type: Number,
+    },
     player1: {
         pid: {
             type: Number,
@@ -97,7 +100,10 @@ const teamSchema = new mongoose.Schema({
         fantasy_Point: Number,
     },
     team: Number,
-});
+},{
+    timestamps: true,
+}
+);
 
 const teamModel = mongoose.model('team', teamSchema);
 
