@@ -1,5 +1,6 @@
 const UserModel = require("../models/userModel");
 const AdminModel = require("../models/adminModel");
+const Notification = require('../models/notifications');
 const AdminBankModel = require("../models/adminBankModel");
 const UserTransactionsModel = require("../models/userTransactionsModel");
 const PoolContestModel = require("../models/poolContestModel");
@@ -516,4 +517,63 @@ exports.SendNotification = (req, res, next) => {
           data: results,
       });
   });
+};
+
+exports.sendToAllUserNotification = async (req, res) => {
+  try {
+    const { message } = req.body;
+
+    // Find all users
+    const users = await UserModel.find();
+
+    const notifications = await Notification.create(
+      users.map(user => ({ message, user: user.phoneNumber }))
+  );
+
+  // await notifications.save();
+
+    // Send notifications to each user
+    // for (const user of users) {
+    //   // Find the latest notification for this user
+    //   const latestNotification = await Notification.findOne({
+    //     phoneNumber: user.phoneNumber,
+    //   }).sort({ createdAt: -1 });
+
+    //   // Create a new notification only if there are no previous notifications or the latest one is seen
+    //   if (!latestNotification || latestNotification.seen) {
+    //     const newNotification = new Notification({
+    //       phoneNumber: user.phoneNumber,
+    //       message,
+    //       seen: false,
+    //     });
+    //     await newNotification.save();
+    //   }
+    // }
+
+    // for (const user of users) {
+    //   const notification = new Notification({ phoneNumber: user.phoneNumber, message });
+    //   await notification.save();
+    // }
+
+    res.status(201).json({ success: true, message: 'Notifications sent successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
+};
+
+exports.getNotification = async (req, res) => {
+  try {
+    const user = await UserModel.findOne({ phoneNumber: req.params.phoneNumber });
+
+    if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+    }
+
+    const unreadNotifications = await Notification.find({ user: user.phoneNumber, seen: false });
+    res.status(200).json(unreadNotifications);
+} catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+}
+
 };

@@ -17,6 +17,7 @@ const {
   savePhoneNumber,
   getRankPrice,
   SendNotification,
+  sendToAllUserNotification,
     } = require("../controller/controller");
 
 // Set up multer for handling file uploads
@@ -40,6 +41,8 @@ router.post("/logout", logOut)
 router.post("/savenumber", savePhoneNumber)
 router.post("/getRankPrice", getRankPrice);
 router.get("/getSendNotification", SendNotification);
+router.post("/notifications/send-to-all", sendToAllUserNotification);
+router.post("/notifications/:phoneNumber", sendToAllUserNotification);
 
 // router.post("/upload-pan/:phoneNumber", upload.single('pan'), uploadPan);
 // router.post("/upload-aadhar/:phoneNumber", upload.single('aadhar'), uploadAadhar);
