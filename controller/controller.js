@@ -527,11 +527,12 @@ exports.getNotification = async (req, res) => {
         return res.status(404).json({ error: 'User not found' });
     }
 
-    const filter = { phoneNumber: user.phoneNumber, seen: false };
+    const notification = await Notification.find({ phoneNumber });
+  
+    const filter = { phoneNumber: notification.phoneNumber, seen: false };
     const update = { $set: { seen: true } };
-
     const result = await Notification.updateMany(filter, update);
-    res.status(200).send({success: true, message: 'Notifications seen successfully', result});
+    res.status(200).send({success: true, message: 'Notifications seen successfully', notification, result});
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });
   }
