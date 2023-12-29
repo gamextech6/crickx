@@ -508,3 +508,57 @@ exports.postNotification = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+exports.searchNotificationByPhoneNumber = async (req, res) => {
+  try {
+    const { phoneNumber } = req.body;
+    const user = await UserModel.findOne({ phoneNumber });
+
+    if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+    }
+
+    const seenedNotifications = await Notification.find({ phoneNumber, seen: true });
+    const unSeenedNotifications = await Notification.find({ phoneNumber, seen: false });
+    res.status(200).send({success: true, message: 'Users Notifications', seenedNotifications, unSeenedNotifications});
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+exports.deleteNotificationByID = async (req, res) => {
+  try {
+    const { _id } = req.body;
+    const deleteNotification = await Notification.findByIdAndDelete({ _id });
+    res.status(200).send({success: true, message: 'Notifications Deleted successfully', deleteNotification});
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+exports.showNotificationMessage = async (req, res) => {
+  try {
+    const uniqueMessages = await Notification.distinct('message');
+    res.status(200).json({ success: true, message: 'Unique Notification Messages Fetched Successfully', uniqueMessages });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+exports.deleteNotificationsByMessage = async (req, res) => {
+  try {
+    const { message } = req.body;
+
+    const result = await Notification.deleteMany({ message });
+
+    res.status(200).json({
+      success: true,
+      message: `Notifications with message type '${message}' deleted successfully`,
+      result,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};

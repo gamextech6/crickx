@@ -21,7 +21,10 @@ const {
     addOrUpdateRankPrice,
     sendToAllUserNotification,
     postNotification,
-
+    searchNotificationByPhoneNumber,
+    deleteNotificationByID,
+    showNotificationMessage,
+    deleteNotificationsByMessage
 } = require("../controller/adminController");
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -44,6 +47,9 @@ router.post("/edit-pool-contest", editPoolContest);
 router.post("/pricerank", addOrUpdateRankPrice);
 router.post("/notifications/send-to-all", sendToAllUserNotification);
 router.post("/notifications", postNotification);
-
+router.post("/searchNotifications", searchNotificationByPhoneNumber);
+router.post("/deleteNotificationByID", deleteNotificationByID);
+router.post("/showNotificationMessage", showNotificationMessage);
+router.post("/deleteMessage", deleteNotificationsByMessage);
 
 module.exports = router;

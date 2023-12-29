@@ -516,7 +516,6 @@ exports.SendNotification = (req, res, next) => {
   });
 };
 
-
 exports.getNotification = async (req, res) => {
   try {
     const { phoneNumber } = req.params;
