@@ -4,6 +4,7 @@ const AdminAgentModel = require("../models/adminAgentModel");
 const UserTransactionsModel = require("../models/userTransactionsModel");
 const PoolContestModel = require("../models/poolContestModel");
 const RankPriceModel = require("../models/rankPricemodel");
+const Notification = require("../models/notifications")
 const AWS = require("aws-sdk");
 // const { Storage } = require('@google-cloud/storage');
 // const storage = new Storage();
@@ -446,5 +447,64 @@ exports.addOrUpdateRankPrice = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send({ error: "Internal Server Error" });
+  }
+};
+
+
+exports.sendToAllUserNotification = async (req, res) => {
+  try {
+     const { title, message } = req.body;
+
+  //   // Find all users
+    const users = await UserModel.find();
+
+    const notifications = await Notification.create(
+      users.map(user => ({ phoneNumber: user.phoneNumber,title, message }))
+    );
+
+  // await notifications.save();
+
+    // Send notifications to each user
+    // for (const user of users) {
+    //   // Find the latest notification for this user
+    //   const latestNotification = await Notification.findOne({
+    //     phoneNumber: user.phoneNumber,
+    //   }).sort({ createdAt: -1 });
+
+    //   // Create a new notification only if there are no previous notifications or the latest one is seen
+    //   if (!latestNotification || latestNotification.seen) {
+    //     const newNotification = new Notification({
+    //       phoneNumber: user.phoneNumber,
+    //       message,
+    //       seen: false,
+    //     });
+    //     await newNotification.save();
+    //   }
+    // }
+
+    // for (const user of users) {
+    //   const notification = new Notification({ phoneNumber: user.phoneNumber, message });
+    //   await notification.save();
+    // }
+
+    res.status(200).send({ success: true, message: 'Notifications sent successfully', notifications });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
+};
+
+exports.postNotification = async (req, res) => {
+  try {
+    const { phoneNumber,title, message } = req.body;
+    const user = await UserModel.findOne({ phoneNumber });
+    if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+    }
+
+    const notification = await Notification.create({ phoneNumber,title, message });
+    res.status(200).send({success: true, message: 'Notifications sent successfully', notification});
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };

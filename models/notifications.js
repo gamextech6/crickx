@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 
 const notificationSchema = new mongoose.Schema({
-  phoneNumber: { type: String},
+  phoneNumber: String,
+  title: String,
   message: String,
   createdAt: { type: Date, default: Date.now },
   seen: { type: Boolean, default: false }

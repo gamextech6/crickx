@@ -431,9 +431,6 @@ exports.updateFantasyPoints = async () => {
 // Call the updateFantasyPoints function when the server starts or as needed
 exports.updateFantasyPoints();
 
-
-
-
 exports.logOut = async (req, res) => {
   try {
     const { phoneNumber } = req.body;
@@ -519,61 +516,46 @@ exports.SendNotification = (req, res, next) => {
   });
 };
 
-exports.sendToAllUserNotification = async (req, res) => {
-  try {
-    const { message } = req.body;
-
-    // Find all users
-    const users = await UserModel.find();
-
-    const notifications = await Notification.create(
-      users.map(user => ({ message, user: user.phoneNumber }))
-  );
-
-  // await notifications.save();
-
-    // Send notifications to each user
-    // for (const user of users) {
-    //   // Find the latest notification for this user
-    //   const latestNotification = await Notification.findOne({
-    //     phoneNumber: user.phoneNumber,
-    //   }).sort({ createdAt: -1 });
-
-    //   // Create a new notification only if there are no previous notifications or the latest one is seen
-    //   if (!latestNotification || latestNotification.seen) {
-    //     const newNotification = new Notification({
-    //       phoneNumber: user.phoneNumber,
-    //       message,
-    //       seen: false,
-    //     });
-    //     await newNotification.save();
-    //   }
-    // }
-
-    // for (const user of users) {
-    //   const notification = new Notification({ phoneNumber: user.phoneNumber, message });
-    //   await notification.save();
-    // }
-
-    res.status(201).json({ success: true, message: 'Notifications sent successfully' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, error: 'Internal Server Error' });
-  }
-};
 
 exports.getNotification = async (req, res) => {
   try {
-    const user = await UserModel.findOne({ phoneNumber: req.params.phoneNumber });
+    const { phoneNumber } = req.params;
+    const user = await UserModel.findOne({ phoneNumber });
+    console.log(user)
 
     if (!user) {
         return res.status(404).json({ error: 'User not found' });
     }
 
-    const unreadNotifications = await Notification.find({ user: user.phoneNumber, seen: false });
-    res.status(200).json(unreadNotifications);
-} catch (error) {
+    const filter = { phoneNumber: user.phoneNumber, seen: false };
+    const update = { $set: { seen: true } };
+
+    const result = await Notification.updateMany(filter, update);
+    res.status(200).send({success: true, message: 'Notifications seen successfully', result});
+  } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+exports.getNotificationCount = async (req, res) => {
+  try {
+    const { phoneNumber } = req.params;
+    const count = await Notification.countDocuments({ phoneNumber, seen: false });
+    res.status(200).send({success: true, count });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 }
 
-};
+exports.getNotificationByID = async (req, res) => {
+  try {
+    const { _id } = req.body;
+    const count = await Notification.findById({ _id });
+    res.status(200).send({success: true, count });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+
+
