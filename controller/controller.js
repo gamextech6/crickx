@@ -521,18 +521,17 @@ exports.getNotification = async (req, res) => {
   try {
     const { phoneNumber } = req.params;
     const user = await UserModel.findOne({ phoneNumber });
-    console.log(user)
 
     if (!user) {
         return res.status(404).json({ error: 'User not found' });
     }
 
-    const notification = await Notification.find({ phoneNumber });
+    const notifications = await Notification.find({ phoneNumber, seen: false });
   
-    const filter = { phoneNumber: notification.phoneNumber, seen: false };
+    const filter = { phoneNumber, seen: false };
     const update = { $set: { seen: true } };
     const result = await Notification.updateMany(filter, update);
-    res.status(200).send({success: true, message: 'Notifications seen successfully', notification, result});
+    res.status(200).send({success: true, message: 'Notifications seen successfully', notifications, result});
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });
   }
