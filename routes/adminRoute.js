@@ -24,7 +24,8 @@ const {
     searchNotificationByPhoneNumber,
     deleteNotificationByID,
     showNotificationMessage,
-    deleteNotificationsByMessage
+    deleteNotificationsByMessage,
+    seduleMatchData
 } = require("../controller/adminController");
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -51,5 +52,12 @@ router.post("/searchNotifications", searchNotificationByPhoneNumber);
 router.post("/deleteNotificationByID", deleteNotificationByID);
 router.post("/showNotificationMessage", showNotificationMessage);
 router.post("/deleteMessage", deleteNotificationsByMessage);
+router.post("/seduleMatchData", seduleMatchData);
+
+
+
+
+
+
 
 module.exports = router;

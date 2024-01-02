@@ -4,7 +4,8 @@ const AdminAgentModel = require("../models/adminAgentModel");
 const UserTransactionsModel = require("../models/userTransactionsModel");
 const PoolContestModel = require("../models/poolContestModel");
 const RankPriceModel = require("../models/rankPricemodel");
-const Notification = require("../models/notifications")
+const Notification = require("../models/notifications");
+const axios = require('axios');
 const AWS = require("aws-sdk");
 // const { Storage } = require('@google-cloud/storage');
 // const storage = new Storage();
@@ -559,6 +560,20 @@ exports.deleteNotificationsByMessage = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+exports.seduleMatchData = async (req, res) => {
+  try {
+    const apiUrl = 'https://rest.entitysport.com/v2/matches/?status=1&token=444b8b1e48d9cd803ea3820c5c17ecc4';
+    // Make a request to the external API
+    const externalApiResponse = await axios.get(apiUrl);
+    // const flattenedResponse = flatted.stringify(externalApiResponse.data);
+    // Send the response back to the client
+    res.send(externalApiResponse.data);
+  } catch (error) {
+    console.error('Error:', error.message);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
