@@ -12,7 +12,7 @@ const teamSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    userId: {
+    phoneNumber: {
         type: String,
         required: true,
     },
