@@ -5,12 +5,16 @@ const teamSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    contest_id:{
+    total_fantasy_Point:{
+        type: Number,
+    },
+    poolContestId: {
         type: String,
         required: true,
     },
-    total_fantasy_Point:{
-        type: Number,
+    userId: {
+        type: String,
+        required: true,
     },
     player1: {
         pid: {
@@ -19,6 +23,7 @@ const teamSchema = new mongoose.Schema({
         },
         fantasy_Point: Number,
         c: Boolean,
+        vc: Boolean,
     },
     player2: {
         pid: {

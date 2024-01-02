@@ -15,6 +15,8 @@ const {
   getPoolContest,
   logOut,
   savePhoneNumber,
+  team,
+  updatePlayer,
   getRankPrice,
   SendNotification,
   getNotification,
@@ -40,7 +42,9 @@ router.post("/dialCode",dialCode);
 router.post("/getpool", getAllPoolContest);
 router.post("/getpool-contest", getPoolContest);
 router.post("/logout", logOut)
-router.post("/savenumber", savePhoneNumber)
+router.post("/savenumber", savePhoneNumber);
+router.post("/team", team);
+router.post("/updatePlayer", updatePlayer);
 router.post("/getRankPrice", getRankPrice);
 router.get("/getSendNotification", SendNotification);
 router.post("/notifications/:phoneNumber", getNotification);

@@ -266,27 +266,30 @@ exports.getAllPoolContest = async (req, res) => {
 
 exports.team = async (req, res) => {
   try {
-    const { match_id,pid, entry_fee, total_spots, winning_spots_precent } = req.body;
-    const price_pool = total_spots*entry_fee*price_pool_percent/100;
-    const winning_spots = total_spots*winning_spots_precent/100
-    const newPool = new TeamModel({ 
-      match_id, 
-      price_pool_percent, 
-      "player1.pid" : pid,
-      entry_fee, 
-      total_spots, 
-      winning_spots_precent,
-      winning_spots,
-     });
-    await newPool.save();
-    return res
-      .status(200)
-      .send({ success: true, data: newPool ,message: "Pool Contest Created Successfully." });
+    const { match_id, poolContestId, phoneNumber, players } = req.body;
+
+    // Convert array data to the desired format
+    const transformedData = players.reduce((acc, playerId, index) => {
+      acc[`player${index + 1}`] = { pid: playerId, fantasy_Point: 0, c: false };
+      return acc;
+    }, { match_id, poolContestId, phoneNumber });
+
+    // Create the new team object
+    const newTeam = new TeamModel(transformedData);
+
+    await newTeam.save();
+
+    return res.status(200).send({
+      success: true,
+      data: newTeam,
+      message: "New Team Created Successfully.",
+    });
   } catch (error) {
-    console.error("Error creating admin agent:", error);
+    console.error("Error Creating Team:", error);
     res.status(500).send({ error: "Internal server error" });
   }
-}
+};
+
 
 exports.updatePlayer = async (req, res) => {
   try {
