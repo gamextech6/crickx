@@ -22,8 +22,14 @@ const teamSchema = new mongoose.Schema({
             required: true
         },
         fantasy_Point: Number,
-        c: Boolean,
-        vc: Boolean,
+        c: {
+            type: Boolean,
+            default: false
+        },
+        vc: {
+            type: Boolean,
+            default: false
+        },
     },
     player2: {
         pid: {
@@ -31,7 +37,14 @@ const teamSchema = new mongoose.Schema({
             required: true
         },
         fantasy_Point: Number,
-        c: Boolean,
+        c: {
+            type: Boolean,
+            default: false
+        },
+        vc: {
+            type: Boolean,
+            default: false
+        },
     },
     player3: {
         pid: {
@@ -39,7 +52,14 @@ const teamSchema = new mongoose.Schema({
             required: true
         },
         fantasy_Point: Number,
-        c: Boolean,
+        c: {
+            type: Boolean,
+            default: false
+        },
+        vc: {
+            type: Boolean,
+            default: false
+        },
     },
     player4: {
         pid: {
@@ -47,7 +67,14 @@ const teamSchema = new mongoose.Schema({
             required: true
         },
         fantasy_Point: Number,
-        c: Boolean,
+        c: {
+            type: Boolean,
+            default: false
+        },
+        vc: {
+            type: Boolean,
+            default: false
+        },
     },
     player5: {
         pid: {
@@ -55,7 +82,14 @@ const teamSchema = new mongoose.Schema({
             required: true
         },
         fantasy_Point: Number,
-        c: Boolean,
+        c: {
+            type: Boolean,
+            default: false
+        },
+        vc: {
+            type: Boolean,
+            default: false
+        },
     },
     player6: {
         pid: {
@@ -63,7 +97,14 @@ const teamSchema = new mongoose.Schema({
             required: true
         },
         fantasy_Point: Number,
-        c: Boolean,
+        c: {
+            type: Boolean,
+            default: false
+        },
+        vc: {
+            type: Boolean,
+            default: false
+        },
     },
     player7: {
         pid: {
@@ -71,7 +112,14 @@ const teamSchema = new mongoose.Schema({
             required: true
         },
         fantasy_Point: Number,
-        c: Boolean,
+        c: {
+            type: Boolean,
+            default: false
+        },
+        vc: {
+            type: Boolean,
+            default: false
+        },
     },
     player8: {
         pid: {
@@ -79,7 +127,14 @@ const teamSchema = new mongoose.Schema({
             required: true
         },
         fantasy_Point: Number,
-        c: Boolean,
+        c: {
+            type: Boolean,
+            default: false
+        },
+        vc: {
+            type: Boolean,
+            default: false
+        },
     },
     player9: {
         pid: {
@@ -87,7 +142,14 @@ const teamSchema = new mongoose.Schema({
             required: true
         },
         fantasy_Point: Number,
-        c: Boolean,
+        c: {
+            type: Boolean,
+            default: false
+        },
+        vc: {
+            type: Boolean,
+            default: false
+        },
     },
     player10: {
         pid: {
@@ -95,7 +157,14 @@ const teamSchema = new mongoose.Schema({
             required: true
         },
         fantasy_Point: Number,
-        c: Boolean,
+        c: {
+            type: Boolean,
+            default: false
+        },
+        vc: {
+            type: Boolean,
+            default: false
+        },
     },
     player11: {
         pid: {
@@ -103,8 +172,15 @@ const teamSchema = new mongoose.Schema({
             required: true
         },
         fantasy_Point: Number,
+        c: {
+            type: Boolean,
+            default: false
+        },
+        vc: {
+            type: Boolean,
+            default: false
+        },
     },
-    team: Number,
 },{
     timestamps: true,
 }

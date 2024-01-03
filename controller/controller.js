@@ -293,7 +293,7 @@ exports.team = async (req, res) => {
 
 exports.updatePlayer = async (req, res) => {
   try {
-    const { pid, fantasy_Point, c } = req.body;
+    const { pid, fantasy_Point, c, vc} = req.body;
 
     // Find the team where the player with the specified pid exists
     const team = await TeamModel.findOne({
@@ -322,6 +322,7 @@ exports.updatePlayer = async (req, res) => {
         if (player && player.pid === pid) {
           player.fantasy_Point = fantasy_Point;
           player.c = c;
+          player.vc = vc;
         }
       }
     );
