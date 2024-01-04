@@ -267,11 +267,33 @@ exports.getAllPoolContest = async (req, res) => {
 
 exports.team = async (req, res) => {
   try {
-    const { match_id, poolContestId, phoneNumber, players } = req.body;
+    const { match_id, poolContestId, phoneNumber, playersID, playersName, playersSkill, playersPoint } = req.body;
+
+    // Check if the required properties are present and are arrays
+    if (!Array.isArray(playersID) || !Array.isArray(playersName) || !Array.isArray(playersSkill) || !Array.isArray(playersPoint)) {
+      return res.status(400).send({ error: "Invalid request body format" });
+    }
+
+    // Check if the arrays have the same length
+    if (
+      playersID.length !== playersName.length ||
+      playersID.length !== playersSkill.length ||
+      playersID.length !== playersPoint.length
+    ) {
+      return res.status(400).send({ error: "Arrays must have the same length" });
+    }
 
     // Convert array data to the desired format
-    const transformedData = players.reduce((acc, playerId, index) => {
-      acc[`player${index + 1}`] = { pid: playerId, fantasy_Point: 0, c: false };
+    const transformedData = playersID.reduce((acc, playerId, index) => {
+      acc[`player${index + 1}`] = {
+        pid: playerId,
+        name: playersName[index],
+        skill: playersSkill[index],
+        point: playersPoint[index],
+        fantasy_Point: 0,
+        c: false,
+        vc: false
+      };
       return acc;
     }, { match_id, poolContestId, phoneNumber });
 
@@ -290,6 +312,7 @@ exports.team = async (req, res) => {
     res.status(500).send({ error: "Internal server error" });
   }
 };
+
 
 
 exports.updatePlayer = async (req, res) => {

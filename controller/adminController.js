@@ -583,14 +583,16 @@ exports.updateFantasyPoints = async (req, res) => {
   try {
     const {match_id} = req.body;
     // Fetch data from the external API
-    const apiURL = 'https://rest.entitysport.com/v2/matches/${match_id}/newpoint2?token=ec471071441bb2ac538a0ff901abd249';
+    const apiURL = `https://rest.entitysport.com/v3/matches/${match_id}/newpoint2?token=444b8b1e48d9cd803ea3820c5c17ecc4`;
     const apiResponse = await axios.get(apiURL);
+    console.log("apiResponse"+ apiResponse.response)
 
     const allTeams = await TeamModel.find({ match_id });
-    console.log(allTeams);
+    //console.log(allTeams);
 
     // Extract relevant data from the API response
     const timestampEnd = apiResponse.response.timestamp_end;
+    console.log("timestampEnd"+timestampEnd);
     const playersFantasyPointsTeama = apiResponse.response.points.teama.playing11;
     const playersFantasyPointsTeamb =  apiResponse.response.points.teamb.playing11; // Assuming this is an array of player objects
 
