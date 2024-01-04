@@ -21,6 +21,7 @@ const teamSchema = new mongoose.Schema({
             type: Number,
             required: true
         },
+        point: String,
         fantasy_Point: Number,
         c: {
             type: Boolean,
@@ -30,12 +31,15 @@ const teamSchema = new mongoose.Schema({
             type: Boolean,
             default: false
         },
+        name: String,
+        skill: String,
     },
     player2: {
         pid: {
             type: Number,
             required: true
         },
+        point: String,
         fantasy_Point: Number,
         c: {
             type: Boolean,
@@ -45,12 +49,15 @@ const teamSchema = new mongoose.Schema({
             type: Boolean,
             default: false
         },
+        name: String,
+        skill: String,
     },
     player3: {
         pid: {
             type: Number,
             required: true
         },
+        point: String,
         fantasy_Point: Number,
         c: {
             type: Boolean,
@@ -60,12 +67,15 @@ const teamSchema = new mongoose.Schema({
             type: Boolean,
             default: false
         },
+        name: String,
+        skill: String,
     },
     player4: {
         pid: {
             type: Number,
             required: true
         },
+        point: String,
         fantasy_Point: Number,
         c: {
             type: Boolean,
@@ -75,12 +85,15 @@ const teamSchema = new mongoose.Schema({
             type: Boolean,
             default: false
         },
+        name: String,
+        skill: String,
     },
     player5: {
         pid: {
             type: Number,
             required: true
         },
+        point: String,
         fantasy_Point: Number,
         c: {
             type: Boolean,
@@ -90,12 +103,15 @@ const teamSchema = new mongoose.Schema({
             type: Boolean,
             default: false
         },
+        name: String,
+        skill: String,
     },
     player6: {
         pid: {
             type: Number,
             required: true
         },
+        point: String,
         fantasy_Point: Number,
         c: {
             type: Boolean,
@@ -105,12 +121,15 @@ const teamSchema = new mongoose.Schema({
             type: Boolean,
             default: false
         },
+        name: String,
+        skill: String,
     },
     player7: {
         pid: {
             type: Number,
             required: true
         },
+        point: String,
         fantasy_Point: Number,
         c: {
             type: Boolean,
@@ -120,12 +139,15 @@ const teamSchema = new mongoose.Schema({
             type: Boolean,
             default: false
         },
+        name: String,
+        skill: String,
     },
     player8: {
         pid: {
             type: Number,
             required: true
         },
+        point: String,
         fantasy_Point: Number,
         c: {
             type: Boolean,
@@ -135,12 +157,15 @@ const teamSchema = new mongoose.Schema({
             type: Boolean,
             default: false
         },
+        name: String,
+        skill: String,
     },
     player9: {
         pid: {
             type: Number,
             required: true
         },
+        point: String,
         fantasy_Point: Number,
         c: {
             type: Boolean,
@@ -150,6 +175,8 @@ const teamSchema = new mongoose.Schema({
             type: Boolean,
             default: false
         },
+        name: String,
+        skill: String,
     },
     player10: {
         pid: {
