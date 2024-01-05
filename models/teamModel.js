@@ -16,9 +16,10 @@ const teamSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    
     player1: {
         pid: {
-            type: Number,
+            type: String,
             required: true
         },
         point: String,
@@ -36,7 +37,7 @@ const teamSchema = new mongoose.Schema({
     },
     player2: {
         pid: {
-            type: Number,
+            type: String,
             required: true
         },
         point: String,
@@ -54,7 +55,7 @@ const teamSchema = new mongoose.Schema({
     },
     player3: {
         pid: {
-            type: Number,
+            type: String,
             required: true
         },
         point: String,
@@ -72,7 +73,7 @@ const teamSchema = new mongoose.Schema({
     },
     player4: {
         pid: {
-            type: Number,
+            type: String,
             required: true
         },
         point: String,
@@ -90,7 +91,7 @@ const teamSchema = new mongoose.Schema({
     },
     player5: {
         pid: {
-            type: Number,
+            type: String,
             required: true
         },
         point: String,
@@ -108,7 +109,7 @@ const teamSchema = new mongoose.Schema({
     },
     player6: {
         pid: {
-            type: Number,
+            type: String,
             required: true
         },
         point: String,
@@ -126,7 +127,7 @@ const teamSchema = new mongoose.Schema({
     },
     player7: {
         pid: {
-            type: Number,
+            type: String,
             required: true
         },
         point: String,
@@ -144,7 +145,7 @@ const teamSchema = new mongoose.Schema({
     },
     player8: {
         pid: {
-            type: Number,
+            type: String,
             required: true
         },
         point: String,
@@ -162,7 +163,7 @@ const teamSchema = new mongoose.Schema({
     },
     player9: {
         pid: {
-            type: Number,
+            type: String,
             required: true
         },
         point: String,
@@ -180,7 +181,7 @@ const teamSchema = new mongoose.Schema({
     },
     player10: {
         pid: {
-            type: Number,
+            type: String,
             required: true
         },
         fantasy_Point: Number,
@@ -195,7 +196,7 @@ const teamSchema = new mongoose.Schema({
     },
     player11: {
         pid: {
-            type: Number,
+            type: String,
             required: true
         },
         fantasy_Point: Number,

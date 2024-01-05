@@ -267,7 +267,7 @@ exports.getAllPoolContest = async (req, res) => {
 
 exports.team = async (req, res) => {
   try {
-    const { match_id, poolContestId, phoneNumber, playersID, playersName, playersSkill, playersPoint } = req.body;
+    const { match_id, poolContestId, phoneNumber, playersID, playersName, playersSkill, playersPoint, c, vc } = req.body;
 
     // Check if the required properties are present and are arrays
     if (!Array.isArray(playersID) || !Array.isArray(playersName) || !Array.isArray(playersSkill) || !Array.isArray(playersPoint)) {
@@ -291,8 +291,8 @@ exports.team = async (req, res) => {
         skill: playersSkill[index],
         point: playersPoint[index],
         fantasy_Point: 0,
-        c: false,
-        vc: false
+        c: playerId === c, // Set c to true if playerId matches c
+        vc: playerId === vc, // Set vc to true if playerId matches vc
       };
       return acc;
     }, { match_id, poolContestId, phoneNumber });
@@ -312,7 +312,6 @@ exports.team = async (req, res) => {
     res.status(500).send({ error: "Internal server error" });
   }
 };
-
 
 
 exports.updatePlayer = async (req, res) => {
