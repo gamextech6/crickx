@@ -636,15 +636,11 @@ exports.updateFantasyPoints = async (req, res) => {
     // Fetch data from the external API
     const apiURL = `https://rest.entitysport.com/v3/matches/${match_id}/newpoint2?token=444b8b1e48d9cd803ea3820c5c17ecc4`;
     const apiResponse = await axios.get(apiURL);
-    const playersFantasyPoints = apiResponse.data.response.points.teamb.playing11;
-    console.log(playersFantasyPoints);
-
-    // Immediately return success response to the client
-    res.status(200).json({ message: 'Fantasy points update process initiated' });
+    // const teamaPlaying11 = await apiResponse.data.response.points.teama.playing11;
+    const teambPlaying11 = await apiResponse.data.response.points.teamb.playing11;
 
     // Update fantasy points in TeamModel based on player PIDs
     const teams = await TeamModel.find({ match_id });
-    // console.log(teams);
 
     if (!teams || teams.length === 0) {
       console.log('Teams not found');
@@ -654,45 +650,84 @@ exports.updateFantasyPoints = async (req, res) => {
     for (const team of teams) {
       try {
         let totalFantasyPoints = 0;
-        ['player1', 'player2', 'player3', 'player4', 'player5', 'player6', 'player7', 'player8', 'player9', 'player10', 'player11'].forEach(
-          (playerField) => {
-            const player = team[playerField];
-            const matchingPlayer = playersFantasyPoints.find(apiPlayer => apiPlayer.pid === player.pid);
-            console.log(matchingPlayer);
-            con
-            if (matchingPlayer) {
-              player.fantasy_Point = matchingPlayer.fantasy_point;
-              // Optionally, update other fields like 'c' if needed
-              totalFantasyPoints += matchingPlayer.fantasy_point; // Add player's fantasy points to total
-            } else {
-              // If no matching player, set fantasy points to 0
-              player.fantasy_Point = 0;
-              // Optionally, update other fields like 'c' to default values
-            }
-          }
-        );
 
-        team.total_fantasy_Point = totalFantasyPoints; // Update total fantasy points for the team
+        for (const playerField of [
+          'player1',
+          'player2',
+          'player3',
+          'player4',
+          'player5',
+          'player6',
+          'player7',
+          'player8',
+          'player9',
+          'player10',
+          'player11',
+        ]) {
+          const player = team[playerField];
+          const matchingPlayer = teambPlaying11.find(apiPlayer => player.pid === apiPlayer.pid);
+          // res.send({matchingPlayer});
+          if (matchingPlayer) {
+            if(player.c){
+              player.fantasy_Point = (parseFloat(matchingPlayer.point))*2;
+              totalFantasyPoints += parseFloat(matchingPlayer.point)*2;
+            }else if(player.vc){
+              player.fantasy_Point = parseFloat(matchingPlayer.point)*1.5;
+              totalFantasyPoints += parseFloat(matchingPlayer.point)*1.5;
+            }else{
+              player.fantasy_Point = parseFloat(matchingPlayer.point);
+              totalFantasyPoints += parseFloat(matchingPlayer.point);
+            } 
+          } else {
+            player.fantasy_Point = 0;
+            // Optionally, handle other default values
+          }
+        }
+
+        team.total_fantasy_Point = totalFantasyPoints;
         await team.save();
-        console.log(`Fantasy points updated successfully for team with ID: ${team._id}`);
       } catch (updateError) {
         console.error(`Error updating fantasy points for team with ID ${team._id}:`, updateError);
       }
     }
 
     console.log('Fantasy points updated successfully for all teams');
+    res.status(200).json({ message: 'Fantasy points updated ' });
   } catch (error) {
     console.error('Error updating fantasy points:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
-
-exports.updateFantasy = async (req, res) => {
+exports.updateRank = async (req, res) => {
   try {
-    
+    const { match_id } = req.body;
+    const teams = await TeamModel.find({ match_id });
+    const pools = await PoolContestModel.find({ match_id });
+
+    for (const pool of pools) {
+      const poolTeams = teams.filter(team => team.poolContestId.equals(pool._id));
+
+      // Sort teams based on total_fantasy_Point (higher points come first)
+      poolTeams.sort((a, b) => b.total_fantasy_Point - a.total_fantasy_Point);
+
+      // Assign ranks based on sorted order
+      poolTeams.forEach((team, index) => {
+        team.rank = index + 1; // Rank starts from 1
+      });
+
+      // If multiple teams have the same total_fantasy_Point, further sort by createdAt
+      poolTeams.sort((a, b) => a.createdAt - b.createdAt);
+
+      // Update teams with ranks
+      poolTeams.forEach(async team => {
+        await team.save();
+      });
+    }
+
+    res.status(200).json({ message: 'Ranks updated successfully' });
   } catch (error) {
-    console.error('Error updating fantasy points:', error);
+    console.error('Error updating ranks:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
-}
+};

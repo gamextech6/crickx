@@ -27,6 +27,7 @@ const {
     deleteNotificationsByMessage,
     seduleMatchData,
     updateFantasyPoints,
+    updateRank
 } = require("../controller/adminController");
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -55,6 +56,7 @@ router.post("/showNotificationMessage", showNotificationMessage);
 router.post("/deleteMessage", deleteNotificationsByMessage);
 router.post("/seduleMatchData", seduleMatchData);
 router.post("/updateFantasyPoints", updateFantasyPoints);
+router.post("/updateRank", updateRank);
 
 
 
