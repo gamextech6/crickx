@@ -16,7 +16,12 @@ const teamSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    rank: Number,
+    rank: {
+        type: Number,
+    },
+    prize:{
+        type: Number,
+    },
     player1: {
         pid: {
             type: String,

@@ -641,12 +641,14 @@ exports.updateFantasyPoints = async (req, res) => {
 
     // Update fantasy points in TeamModel based on player PIDs
     const teams = await TeamModel.find({ match_id });
+    const pools = await PoolContestModel.find({ match_id });
 
     if (!teams || teams.length === 0) {
       console.log('Teams not found');
       return;
     }
 
+    //code for fantecy point allotment to team
     for (const team of teams) {
       try {
         let totalFantasyPoints = 0;
@@ -691,6 +693,23 @@ exports.updateFantasyPoints = async (req, res) => {
       }
     }
 
+    //code for rank allotment to team
+    for (const pool of pools) {
+      const poolTeams = teams.filter(team => team.poolContestId === String(pool._id));
+      // Sort teams based on total_fantasy_Point (higher points come first)
+      poolTeams.sort((a, b) => b.total_fantasy_Point - a.total_fantasy_Point);
+      // Assign ranks based on sorted order
+      poolTeams.forEach((team, index) => {
+        team.rank = index + 1; // Rank starts from 1
+      });
+      // If multiple teams have the same total_fantasy_Point, further sort by createdAt
+      poolTeams.sort((a, b) => a.createdAt - b.createdAt);
+      // Update teams with ranks
+      poolTeams.forEach(async team => {
+        await team.save();
+      });
+    }
+
     console.log('Fantasy points updated successfully for all teams');
     res.status(200).json({ message: 'Fantasy points updated ' });
   } catch (error) {
@@ -699,31 +718,41 @@ exports.updateFantasyPoints = async (req, res) => {
   }
 };
 
-exports.updateRank = async (req, res) => {
+exports.updatePrize = async (req, res) => {
   try {
     const { match_id } = req.body;
     const teams = await TeamModel.find({ match_id });
     const pools = await PoolContestModel.find({ match_id });
+    // console.log(pools);
 
     for (const pool of pools) {
-      const poolTeams = teams.filter(team => team.poolContestId.equals(pool._id));
-
-      // Sort teams based on total_fantasy_Point (higher points come first)
+      const poolTeams = teams.filter(team => team.poolContestId === String(pool._id));      
+      // Sort poolTeams by total_fantasy_Point in descending order
       poolTeams.sort((a, b) => b.total_fantasy_Point - a.total_fantasy_Point);
+      // Distribute prize based on team rank
+      const rankPriceDocument = await RankPriceModel.findOne({ contest_id: pool._id.toString() });
+      console.log(rankPriceDocument);
+      // Iterate through sorted poolTeams and update rank and distribute prize
+      for (let i = 0; i < poolTeams.length; i++) {
+        const team = poolTeams[i];
+        
+        // Update team rank
+        team.rank = i + 1;
+        const rankAsString = team.rank.toString();
+        if (rankPriceDocument && rankPriceDocument.ranksAndPrices && rankPriceDocument.ranksAndPrices.get(rankAsString)) {
+          const prizeAmount = rankPriceDocument.ranksAndPrices.get(rankAsString);
+          team.prize = prizeAmount;
+          const player = await UserModel.findOne({ phoneNumber: team.phoneNumber})
+          player.balance += prizeAmount;
+          await player.save();
+        } else {
+          team.prize = 0; // Default prize if not found
+        }
 
-      // Assign ranks based on sorted order
-      poolTeams.forEach((team, index) => {
-        team.rank = index + 1; // Rank starts from 1
-      });
-
-      // If multiple teams have the same total_fantasy_Point, further sort by createdAt
-      poolTeams.sort((a, b) => a.createdAt - b.createdAt);
-
-      // Update teams with ranks
-      poolTeams.forEach(async team => {
         await team.save();
-      });
+      }
     }
+
 
     res.status(200).json({ message: 'Ranks updated successfully' });
   } catch (error) {
