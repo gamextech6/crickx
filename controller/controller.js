@@ -13,6 +13,7 @@ const twilio = require("twilio");
 const AWS = require("aws-sdk");
 const { ONE_SIGNAL_CONFIG } = require("../config/app.config");
 const pushNotificationServices = require("../services/push_notification_service");
+const teamModel = require("../models/teamModel");
 const client = new twilio(
   process.env.TWILIO_ACCOUNT_SID,
   process.env.TWILIO_AUTH_TOKEN
@@ -523,6 +524,20 @@ exports.getNotificationByID = async (req, res) => {
     const { _id } = req.body;
     const count = await Notification.findById({ _id });
     res.status(200).send({success: true, count });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+exports.getCreatedTeam = async (req, res) => {
+  try {
+    const { match_id, contest_id, phoneNumber } = req.body;
+    const teams = await teamModel.find({ match_id: match_id, poolContestId: contest_id, phoneNumber: phoneNumber });
+    if(!teams){
+      return res.status(200).send({ teams });
+    }else{
+      return res.status(200).send({ teams });
+    }
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });
   }

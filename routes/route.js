@@ -21,7 +21,8 @@ const {
   SendNotification,
   getNotification,
   getNotificationCount,
-  getNotificationByID
+  getNotificationByID, 
+  getCreatedTeam
     } = require("../controller/controller");
 
 // Set up multer for handling file uploads
@@ -50,6 +51,7 @@ router.get("/getSendNotification", SendNotification);
 router.post("/notifications/:phoneNumber", getNotification);
 router.post("/getNotificationCount/:phoneNumber", getNotificationCount);
 router.post("/getNotificationByID", getNotificationByID);
+router.post("/getCreatedTeam", getCreatedTeam);
 
 // router.post("/upload-pan/:phoneNumber", upload.single('pan'), uploadPan);
 // router.post("/upload-aadhar/:phoneNumber", upload.single('aadhar'), uploadAadhar);
