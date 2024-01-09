@@ -431,16 +431,11 @@ exports.editPoolContest = async (req, res) => {
 exports.addOrUpdateRankPrice = async (req, res) => {
   try {
     const { contest_id, from, to, price } = req.body;
-
-    console.log("Request body:"+ req.body);
-
     if (!contest_id || !from || !price) {
-      console.error("Invalid request body");
       return res.status(400).send({ error: "Invalid request body" });
     }
 
     if (to === undefined) {
-      console.log("Updating single rank:", from);
       const rank = from.toString();
       const filter = { contest_id };
       const update = { $set: { [`ranksAndPrices.${rank}`]: price } };
@@ -451,7 +446,6 @@ exports.addOrUpdateRankPrice = async (req, res) => {
         options
       );
     } else if (typeof from === 'number' && typeof to === 'number' && from <= to) {
-      console.log("Updating rank range from", from, "to", to);
       for (let i = from; i <= to; i++) {
         const rank = i.toString();
         const filter = { contest_id };
@@ -467,17 +461,12 @@ exports.addOrUpdateRankPrice = async (req, res) => {
     } else {
       console.error("Invalid range: 'from' or 'to' is not a number, or 'from' is greater than 'to'");
     }
-
-    res.send({ message: "Rank And Prize Updated Successfully" });
+    res.status(200).send({success: true, message: "Rank And Prize Updated Successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).send({ error: "Internal Server Error" });
   }
 };
-
-
-
-
 
 exports.sendToAllUserNotification = async (req, res) => {
   try {

@@ -534,9 +534,9 @@ exports.getCreatedTeam = async (req, res) => {
     const { match_id, contest_id, phoneNumber } = req.body;
     const teams = await teamModel.find({ match_id: match_id, poolContestId: contest_id, phoneNumber: phoneNumber });
     if(!teams){
-      return res.status(200).send({ teams });
+      return res.status(200).send({success:true,message:"You have not created any team", teams });
     }else{
-      return res.status(200).send({ teams });
+      return res.status(200).send({success:true,message:"Your created teams", teams });
     }
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });
