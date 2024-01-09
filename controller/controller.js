@@ -533,15 +533,18 @@ exports.getCreatedTeam = async (req, res) => {
   try {
     const { match_id, contest_id, phoneNumber } = req.body;
     const teams = await teamModel.find({ match_id: match_id, poolContestId: contest_id, phoneNumber: phoneNumber });
-    if(!teams){
-      return res.status(200).send({success:true,message:"You have not created any team", teams });
+    const user = await UserModel.findOne({phoneNumber});
+    const constest = await PoolContestModel.findOne({ _id: contest_id });
+
+    if(!teams && constest.entry_fee <= user.balance){
+      return res.status(200).send({success:true,message:"You have not created any team", balance:true, teams });
+    }else if(constest.entry_fee <= user.balance){
+      return res.status(200).send({success:true,message:"Your created teams",balance:true, teams });
     }else{
-      return res.status(200).send({success:true,message:"Your created teams", teams });
+      return res.status(200).send({success: true, message: "You don't have balance in your wallet", balance: false })
     }
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 }
-
-
 
