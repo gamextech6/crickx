@@ -548,3 +548,28 @@ exports.getCreatedTeam = async (req, res) => {
   }
 }
 
+exports.joinContest = async (req, res) => {
+  try {
+    const { poolContestId, phoneNumber } = req.body;
+    const contest = await PoolContestModel.findOne({ _id: poolContestId });
+    if (!contest) {
+      return res.status(404).json({ error: 'Contest not found' });
+    }
+    contest.done_spots = contest.done_spots + 1;
+    await contest.save();
+    const user = await UserModel.findOne({ phoneNumber });
+    user.balance = user.balance - contest.entry_fee;
+    await user.save();
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.status(200).send({
+      success: true,
+      message: "You have joined successfully",
+      done_spots: contest.done_spots,
+      balance: user.balance
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
